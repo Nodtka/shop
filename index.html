@@ -11,7 +11,7 @@
         .container { padding: 16px; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Тот самый дизайн из скринов */
+        /* Дизайн профиля */
         .profile-card { background: #1c2228; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid #242f3d; }
         .progress-bar { height: 6px; background: #242f3d; border-radius: 10px; margin: 12px 0; overflow: hidden; }
         .progress-fill { width: 15%; height: 100%; background: var(--accent); box-shadow: 0 0 10px rgba(254, 189, 47, 0.5); }
@@ -22,20 +22,18 @@
         .card { background: var(--card); border-radius: 18px; padding: 22px 10px; text-align: center; border: 1px solid #242f3d; position: relative; transition: 0.2s; }
         .card:active { transform: scale(0.96); background: #1c2228; }
         
-        /* Плашка TOP как на фото */
         .card.popular::after { content: "TOP"; position: absolute; top: 0; right: 0; background: var(--blue); color: #fff; font-size: 9px; font-weight: 900; padding: 3px 10px; border-radius: 0 15px 0 12px; }
         
         .card b { display: block; font-size: 22px; margin-bottom: 6px; color: #fff; }
         .card span { font-size: 14px; color: var(--blue); font-weight: 700; }
 
-        /* Поле ввода другой суммы */
+        /* Поле ввода своей суммы */
         .custom-input-group { background: var(--card); border-radius: 18px; padding: 15px; border: 1px solid #242f3d; margin-top: 12px; display: none; }
         input { width: 100%; background: #242f3d; border: 1px solid #2b3745; border-radius: 12px; color: #fff; padding: 14px; font-size: 16px; box-sizing: border-box; outline: none; }
         
-        /* Кнопки и Табы */
         .btn-pay { background: var(--blue); color: #fff; border: none; border-radius: 16px; padding: 18px; width: 100%; font-size: 16px; font-weight: 700; margin-top: 15px; }
         .tabs { position: fixed; bottom: 0; width: 100%; background: #17212b; display: flex; padding: 10px 0; border-top: 1px solid #242f3d; padding-bottom: calc(10px + var(--tg-viewport-bottom-offset, 0px)); }
-        .tab-item { flex: 1; text-align: center; color: var(--gray); font-size: 11px; font-weight: 600; text-decoration: none; }
+        .tab-item { flex: 1; text-align: center; color: var(--gray); font-size: 11px; font-weight: 600; cursor: pointer; }
         .tab-item.active { color: var(--blue); }
         .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
 
@@ -63,13 +61,13 @@
             <div class="card" onclick="openPay('500 Stars', 118000)"><b>⭐ 500</b><span>118 000 сум</span></div>
         </div>
         
-        <div class="card" style="margin-top:12px; width:100%; display:block; grid-column: span 2;" onclick="toggleCustom()">
+        <div class="card" style="margin-top:12px; width:100%;" onclick="toggleCustom()">
             <b>⚙️ Указать другую сумму</b>
             <span>Минимум 50 ⭐</span>
         </div>
 
         <div id="custom_box" class="custom-input-group">
-            <input type="number" id="custom_stars" placeholder="Сколько звёзд нужно?" oninput="calcPrice()">
+            <input type="number" id="custom_stars" placeholder="Количество звёзд" oninput="calcPrice()">
             <div id="res_price" style="margin-top:10px; color:var(--blue); font-weight:bold; text-align:center;">0 сум</div>
             <button class="btn-pay" style="padding:12px;" onclick="payCustom()">Продолжить</button>
         </div>
@@ -84,18 +82,18 @@
 
 <div id="pay_page" class="page">
     <div class="container">
-        <div class="section-header">Оформление заказа</div>
+        <div class="section-header">Оформление</div>
         <input type="text" id="target_user" placeholder="@username получателя">
         <div id="final_price" style="font-size: 32px; font-weight: 900; text-align: center; margin: 25px 0; color: var(--accent);">0 сум</div>
         
         <div class="card" style="text-align: left; padding: 20px;">
             <span style="font-size: 11px; color: var(--gray);">КАРТА (UZCARD)</span>
             <div style="font-size: 18px; letter-spacing: 1px; margin: 8px 0; font-weight:bold;">5614 6821 1199 5470</div>
-            <button style="color: var(--blue); background: none; border: none; padding: 0; font-weight: bold; cursor:pointer;" onclick="copyCard()">Копировать номер</button>
+            <button style="color: var(--blue); background: none; border: none; padding: 0; font-weight: bold;" onclick="copyCard()">Копировать номер</button>
         </div>
 
         <button class="btn-pay" onclick="confirmPay()">✅ Я ОПЛАТИЛ</button>
-        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px; font-weight:600;" onclick="location.reload()">◀ Вернуться назад</button>
+        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px;" onclick="location.reload()">◀ Назад</button>
     </div>
 </div>
 
@@ -103,7 +101,7 @@
     <div class="tab-item active" onclick="location.reload()">
         <span class="tab-icon">🛒</span>Магазин
     </div>
-    <div class="tab-item" onclick="window.open('https://t.me/wwvlvl', '_blank')">
+    <div class="tab-item" onclick="window.open('https://t.me/wvwlvl', '_blank')">
         <span class="tab-icon">👨‍💻</span>Поддержка
     </div>
 </div>
@@ -144,7 +142,7 @@
 
     function confirmPay() {
         let user = document.getElementById('target_user').value;
-        if(user.length < 3) return tg.showAlert("Укажите ник получателя!");
+        if(user.length < 3) return tg.showAlert("Укажите ник!");
         tg.sendData(`BUY:${order.name}|FOR:${user}|SUM:${order.price}`);
         tg.close();
     }
