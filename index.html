@@ -3,138 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Starsbot Shop</title>
+    <title>Premium Stars Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root { --bg: #000; --card: #1c1c1e; --blue: #007aff; --white: #fff; --gray: #8e8e93; --gold: #febd2f; --red: #ff453a; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--white); margin: 0; padding: 16px; -webkit-user-select: none; }
-        .page { display: none; animation: fadeIn 0.2s; } .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        :root { --bg: #0b0e11; --card: #15191d; --blue: #37aee2; --text: #ffffff; --gray: #707579; --accent: #febd2f; }
+        body { font-family: -apple-system, blinkmacsystemfont, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; transition: 0.3s; }
+        .container { padding: 16px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Шапка */
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .user-info { display: flex; align-items: center; gap: 10px; }
-        .avatar { width: 35px; height: 35px; background: var(--blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        /* Профиль и Бонус */
+        .profile-card { background: linear-gradient(135deg, #1d2733, #15191d); border-radius: 20px; padding: 20px; border: 1px solid #242f3d; margin-bottom: 20px; }
+        .nft-status { font-size: 13px; color: var(--accent); font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .progress-bar { height: 8px; background: #242f3d; border-radius: 10px; overflow: hidden; }
+        .progress-fill { width: 15%; height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); transition: 1s; }
 
         /* Сетка товаров */
-        .section-title { font-size: 14px; font-weight: 700; color: var(--gray); text-transform: uppercase; margin: 20px 0 10px 5px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .card { background: var(--card); border-radius: 14px; padding: 15px; text-align: center; border: 1px solid #2c2c2e; position: relative; }
-        .card:active { transform: scale(0.97); background: #2c2c2c; }
-        .card .val { display: block; font-size: 22px; font-weight: 800; margin-bottom: 2px; }
-        .card .price { color: var(--gray); font-size: 13px; font-weight: 600; }
-        .card .icon { color: var(--gold); margin-bottom: 5px; font-size: 18px; }
+        .section-header { font-size: 14px; font-weight: 700; color: var(--gray); text-transform: uppercase; margin: 25px 0 12px 5px; letter-spacing: 1px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { background: var(--card); border-radius: 16px; padding: 18px; text-align: center; border: 1px solid #242f3d; transition: 0.2s; position: relative; overflow: hidden; }
+        .card:active { transform: scale(0.95); background: #1c2228; }
+        .card.popular::after { content: "TOP"; position: absolute; top: 0; right: 0; background: var(--blue); font-size: 10px; padding: 2px 8px; border-radius: 0 0 0 10px; font-weight: 900; }
+        .card b { display: block; font-size: 20px; margin-bottom: 5px; }
+        .card span { font-size: 14px; color: var(--blue); font-weight: 600; }
 
-        /* Прогресс NFT */
-        .nft-box { background: linear-gradient(90deg, #1c1c1e, #2c2c2e); border-radius: 14px; padding: 15px; margin-top: 15px; border: 1px solid #3a3a3c; }
-        .nft-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .bar-bg { width: 100%; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
-        .bar-fill { width: 45%; height: 100%; background: var(--blue); border-radius: 4px; }
-        .nft-text { font-size: 12px; color: var(--gray); margin-top: 8px; display: block; }
+        /* Навигация (Tabs) */
+        .tabs { position: fixed; bottom: 0; width: 100%; background: #17212b; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #242f3d; z-index: 100; padding-bottom: calc(12px + var(--tg-viewport-bottom-offset, 0px)); }
+        .tab-item { text-align: center; color: var(--gray); font-size: 11px; font-weight: 600; flex: 1; }
+        .tab-item.active { color: var(--blue); }
+        .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
 
-        /* Форма оплаты */
-        .box { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #2c2c2e; }
-        input { width: 100%; box-sizing: border-box; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 10px; color: white; padding: 12px; font-size: 16px; outline: none; margin-top: 10px; }
-        .pay-sum { background: var(--red); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
-        .btn-main { background: var(--blue); color: white; border: none; border-radius: 14px; padding: 18px; width: 100%; font-size: 17px; font-weight: 700; margin-top: 10px; }
-        .btn-copy { background: #2c2c2e; color: var(--blue); border: none; border-radius: 8px; padding: 8px 12px; font-weight: bold; font-size: 13px; margin-top: 10px; cursor: pointer; }
+        /* Страницы */
+        .page { display: none; } .page.active { display: block; }
+        
+        /* Оплата */
+        .pay-info { background: #1c2228; border-radius: 15px; padding: 15px; border-left: 4px solid var(--blue); margin: 15px 0; font-size: 13px; line-height: 1.5; }
+        input { width: 100%; background: #242f3d; border: 1px solid #2b3745; border-radius: 12px; color: #fff; padding: 14px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--blue); }
+        .btn-pay { background: var(--blue); color: #fff; border: none; border-radius: 15px; padding: 18px; width: 100%; font-size: 16px; font-weight: 700; margin-top: 20px; box-shadow: 0 4px 15px rgba(55, 174, 226, 0.3); }
     </style>
 </head>
 <body>
 
-<div id="main" class="page active">
-    <div class="header">
-        <div class="user-info">
-            <div class="avatar" id="user-initials">U</div>
-            <div style="font-weight: 700;" id="user-name">User</div>
+<div id="shop_page" class="page active">
+    <div class="container">
+        <div class="profile-card">
+            <div class="nft-status">
+                <span>🎁 Прогресс NFT (Бонус)</span>
+                <span>15%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill"></div></div>
+            <p style="font-size: 11px; color: var(--gray); margin-top: 10px;">Накопите 1 200 000 сум покупок для получения NFT</p>
         </div>
-        <button style="background:none; border:none; color:var(--blue); font-weight:700;" onclick="showHistory()">История</button>
-    </div>
 
-    <div class="nft-box">
-        <div class="nft-header">
-            <span style="font-weight:800; font-size:14px;">🎁 До NFT: 1 200 000 сум</span>
-            <span style="color:var(--gray); font-size:12px;">45%</span>
+        <div class="section-header">Telegram Stars ⭐</div>
+        <div class="grid">
+            <div class="card" onclick="openPay('50 Stars', 14000)"><b>⭐ 50</b><span>14 000 сум</span></div>
+            <div class="card popular" onclick="openPay('250 Stars', 60000)"><b>⭐ 250</b><span>60 000 сум</span></div>
+            <div class="card" onclick="openPay('1000 Stars', 235000)"><b>⭐ 1000</b><span>235 000 сум</span></div>
+            <div class="card" onclick="openPay('5000 Stars', 1200000)"><b>⭐ 5000</b><span>1.2M сум</span></div>
         </div>
-        <div class="bar-bg"><div class="bar-fill" style="width: 45%;"></div></div>
-        <span class="nft-text">Покупайте Stars и Premium, чтобы получить эксклюзивный подарок!</span>
-    </div>
 
-    <div class="section-title">Купить Stars</div>
-    <div class="grid">
-        <div class="card" onclick="sel('50 Stars', 14000)"><b>⭐ 50</b><span class="price">14 000 сум</span></div>
-        <div class="card" onclick="sel('100 Stars', 24000)"><b>⭐ 100</b><span class="price">24 000 сум</span></div>
-        <div class="card" onclick="sel('250 Stars', 60000)"><b>⭐ 250</b><span class="price">60 000 сум</span></div>
-        <div class="card" onclick="sel('500 Stars', 118000)"><b>⭐ 500</b><span class="price">118 000 сум</span></div>
-        <div class="card" onclick="sel('1000 Stars', 235000)"><b>⭐ 1000</b><span class="price">235 000 сум</span></div>
-        <div class="card" onclick="sel('5000 Stars', 1200000)"><b>⭐ 5000</b><span class="price">1 200 000 сум</span></div>
-    </div>
-
-    <div class="section-title">Telegram Premium</div>
-    <div class="grid">
-        <div class="card" onclick="sel('Premium 1 мес', 50000)"><b>💎 1 мес</b><span class="price">50 000 сум</span></div>
-        <div class="card" onclick="sel('Premium 3 мес', 180000)"><b>💎 3 мес</b><span class="price">180 000 сум</span></div>
-        <div class="card" onclick="sel('Premium 6 мес', 230000)"><b>💎 6 мес</b><span class="price">230 000 сум</span></div>
-        <div class="card" onclick="sel('Premium 12 мес', 400000)"><b>💎 12 мес</b><span class="price">400 000 сум</span></div>
+        <div class="section-header">Telegram Premium 💎</div>
+        <div class="grid">
+            <div class="card" onclick="openPay('Premium 1 мес', 50000)"><b>💎 1 мес</b><span>50 000 сум</span></div>
+            <div class="card popular" onclick="openPay('Premium 12 мес', 400000)"><b>💎 1 год</b><span>400 000 сум</span></div>
+        </div>
     </div>
 </div>
 
-<div id="pay" class="page">
-    <div class="section-title">Оформление</div>
-    <div class="box">
-        <div style="font-size:12px; color:var(--gray); font-weight:700;">USERNAME ПОЛУЧАТЕЛЯ</div>
-        <input type="text" id="nick" placeholder="@username">
+<div id="history_page" class="page">
+    <div class="container" style="text-align: center; margin-top: 50px;">
+        <span style="font-size: 50px;">📦</span>
+        <h3>История пуста</h3>
+        <p style="color: var(--gray);">Ваши покупки появятся здесь после подтверждения</p>
     </div>
-    <div class="pay-sum">
-        <div style="font-size:11px; font-weight:800; opacity:0.8; margin-bottom:5px;">ТОЧНАЯ СУММА К ПЕРЕВОДУ:</div>
-        <div id="fsum" style="font-size:30px; font-weight:900;">0 сум</div>
-        <button class="btn-copy" onclick="cp('fsum', true)">Копировать сумму</button>
-    </div>
-    <div class="box" style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-            <div style="font-size:11px; color:var(--gray); font-weight:700;">КАРТА (UZCARD)</div>
-            <div style="font-family:monospace; font-size:17px; font-weight:700; margin-top:5px;">5614 6821 1199 5470</div>
+</div>
+
+<div id="pay_page" class="page">
+    <div class="container">
+        <div class="section-header">Оформление</div>
+        <input type="text" id="target_user" placeholder="@username получателя">
+        
+        <div class="pay-info">
+            Переведите <b>ровную сумму</b>. Копейки и рандомные цифры в конце помогают нам быстрее найти ваш платеж.
         </div>
-        <button class="btn-copy" onclick="cp('5614682111995470', false)">Копировать</button>
+
+        <div id="final_price" style="font-size: 36px; font-weight: 900; text-align: center; margin: 20px 0; color: var(--accent);">0 сум</div>
+
+        <div class="card" style="text-align: left; padding: 20px;">
+            <span style="font-size: 11px; color: var(--gray);">КАРТА (UZCARD)</span>
+            <div style="font-size: 18px; letter-spacing: 1px; margin: 5px 0;">5614 6821 1199 5470</div>
+            <button style="color: var(--blue); background: none; border: none; padding: 0; font-weight: bold;" onclick="copyCard()">Копировать номер</button>
+        </div>
+
+        <button class="btn-pay" onclick="confirmPay()">✅ Я ОПЛАТИЛ</button>
+        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:15px;" onclick="showPage('shop_page')">Отмена</button>
     </div>
-    <button class="btn-main" onclick="send()">✅ Я ОПЛАТИЛ</button>
-    <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:15px; font-weight:700;" onclick="location.reload()">Назад</button>
+</div>
+
+<div class="tabs">
+    <div class="tab-item active" onclick="showPage('shop_page', this)"><span class="tab-icon">🛒</span>Магазин</div>
+    <div class="tab-item" onclick="showPage('history_page', this)"><span class="tab-icon">📜</span>История</div>
+    <div class="tab-item" onclick="window.open('https://t.me/wwvlv1')"><span class="tab-icon">👨‍💻</span>Поддержка</div>
 </div>
 
 <script>
-    let tg = window.Telegram.WebApp; tg.expand();
-    let curP = 0, curN = "";
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    let currentOrder = { name: "", price: 0 };
 
-    // Инициализация данных пользователя
-    const user = tg.initDataUnsafe?.user;
-    if(user) {
-        document.getElementById('user-name').innerText = user.first_name;
-        document.getElementById('user-initials').innerText = user.first_name[0].toUpperCase();
+    function showPage(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(el) {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
     }
 
-    function sel(n, p) {
-        curN = n; curP = p + (Math.floor(Math.random()*899)+100);
-        document.getElementById('fsum').innerText = curP.toLocaleString() + " сум";
-        document.getElementById('main').classList.remove('active');
-        document.getElementById('pay').classList.add('active');
+    function openPay(name, price) {
+        // Добавляем копейки для уникальности платежа
+        let randomAdd = Math.floor(Math.random() * 999) + 100;
+        currentOrder = { name: name, price: price + randomAdd };
+        document.getElementById('final_price').innerText = currentOrder.price.toLocaleString() + " сум";
+        showPage('pay_page');
     }
 
-    function cp(v, isId) {
-        let t = isId ? document.getElementById(v).innerText.replace(/[^0-9]/g,'') : v;
-        navigator.clipboard.writeText(t);
+    function copyCard() {
+        navigator.clipboard.writeText('5614682111995470');
         tg.HapticFeedback.notificationOccurred('success');
-        tg.showAlert("Скопировано!");
+        tg.showAlert("Номер карты скопирован!");
     }
 
-    function send() {
-        let n = document.getElementById('nick').value;
-        if(n.length < 3) return tg.showAlert("Введите ник получателя!");
-        tg.sendData(`ЗАКАЗ: ${curN} | НИК: ${n} | СУММА: ${curP}`);
-        tg.showAlert("Заявка создана! Теперь пришлите скриншот чека в чат бота.");
-    }
-
-    function showHistory() {
-        tg.showAlert("История покупок временно пуста. После первой оплаты здесь появятся ваши заказы.");
+    function confirmPay() {
+        let user = document.getElementById('target_user').value;
+        if(user.length < 3) return tg.showAlert("Укажите @username!");
+        tg.sendData(`ORDER:${currentOrder.name}|USER:${user}|SUM:${currentOrder.price}`);
+        tg.close();
     }
 </script>
 </body>
