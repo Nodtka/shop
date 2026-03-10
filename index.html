@@ -101,7 +101,7 @@
 </div>
 
 <div id="pay_page" class="page">
-    <div class="container">
+    <div class="container" id="pay_container">
         <div class="section-header">Оформление</div>
         <input type="text" id="target_user" placeholder="@username получателя">
         <div id="final_price" style="font-size: 32px; font-weight: 900; text-align: center; margin: 25px 0; color: var(--accent);">0 сум</div>
@@ -113,7 +113,7 @@
         </div>
 
         <button class="btn-pay" onclick="confirmPay()">✅ Я ОПЛАТИЛ</button>
-        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px;" onclick="showPage('shop_page')">◀ Назад</button>
+        <button id="back_btn" style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px;" onclick="showPage('shop_page')">◀ Назад</button>
     </div>
 </div>
 
@@ -179,8 +179,22 @@
     function confirmPay() {
         let user = document.getElementById('target_user').value;
         if(user.length < 3) return tg.showAlert("Укажите ник!");
+
+        // Отправляем данные в бота
         tg.sendData(`BUY:${order.name}|FOR:${user}|SUM:${order.price}`);
-        tg.close();
+
+        // Вместо закрытия — выводим сообщение об успехе прямо в этом же окне
+        document.getElementById('pay_container').innerHTML = `
+            <div style="text-align: center; padding: 40px 10px; animation: fadeIn 0.4s ease;">
+                <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
+                <h2 style="color: white; margin-bottom: 15px;">Заявка создана!</h2>
+                <p style="color: var(--gray); font-size: 14px; line-height: 1.6;">
+                    Ваш заказ на <b>${order.name}</b> принят. <br><br>
+                    Пожалуйста, <b>пришлите скриншот чека</b> прямо в чат с ботом. Админ проверит оплату в ближайшее время.
+                </p>
+                <button class="btn-pay" onclick="location.reload()" style="margin-top: 30px;">Вернуться в магазин</button>
+            </div>
+        `;
     }
 </script>
 </body>
