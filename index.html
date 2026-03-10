@@ -58,7 +58,6 @@
     </style>
 </head>
 <body>
-
     <div id="main-page" class="page active">
         <div class="section-title">Telegram Stars</div>
         <div class="grid">
@@ -126,9 +125,10 @@
 
         function sendOrder() {
             let nick = document.getElementById('user-nick').value;
-            if (nick.length < 3) return tg.showAlert("Введите ник получателя!");
+            if (nick.length < 3) return tg.showAlert("Введите ник!");
             tg.sendData(`ЗАКАЗ: ${currentN} | НИК: ${nick} | СУММА: ${currentP}`);
-            tg.showAlert("✅ Заявка отправлена! Теперь отправьте скриншот чека в чат боту.");
+            tg.showAlert("✅ Заявка отправлена! Бот прислал инструкции в чат.");
+            // tg.close(); УБРАНО: окно теперь не закрывается само
         }
     </script>
 </body>
