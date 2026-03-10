@@ -7,32 +7,37 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #15191d; --blue: #37aee2; --text: #ffffff; --gray: #707579; --accent: #febd2f; }
-        body { font-family: -apple-system, blinkmacsystemfont, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
+        body { font-family: -apple-system, blinkmacsystemfont, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; scroll-behavior: smooth; }
         .container { padding: 16px; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Дизайн профиля */
-        .profile-card { background: #1c2228; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid #242f3d; }
+        /* Стиль профиля и навигации */
+        .profile-card { background: #1c2228; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #242f3d; }
         .progress-bar { height: 6px; background: #242f3d; border-radius: 10px; margin: 12px 0; overflow: hidden; }
         .progress-fill { width: 15%; height: 100%; background: var(--accent); box-shadow: 0 0 10px rgba(254, 189, 47, 0.5); }
 
-        .section-header { font-size: 13px; font-weight: 800; color: var(--gray); text-transform: uppercase; margin: 25px 0 15px 5px; letter-spacing: 0.5px; }
+        /* Кнопки быстрого перехода на главном */
+        .nav-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .nav-btn { background: linear-gradient(135deg, #242f3d, #15191d); border: 1px solid #37aee2; border-radius: 15px; padding: 15px; text-align: center; color: white; font-weight: bold; cursor: pointer; }
+
+        .section-header { font-size: 13px; font-weight: 800; color: var(--gray); text-transform: uppercase; margin: 35px 0 15px 5px; letter-spacing: 0.5px; border-left: 3px solid var(--blue); padding-left: 10px; }
         
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: var(--card); border-radius: 18px; padding: 22px 10px; text-align: center; border: 1px solid #242f3d; position: relative; transition: 0.2s; }
         .card:active { transform: scale(0.96); background: #1c2228; }
-        
         .card.popular::after { content: "TOP"; position: absolute; top: 0; right: 0; background: var(--blue); color: #fff; font-size: 9px; font-weight: 900; padding: 3px 10px; border-radius: 0 15px 0 12px; }
         
-        .card b { display: block; font-size: 22px; margin-bottom: 6px; color: #fff; }
-        .card span { font-size: 14px; color: var(--blue); font-weight: 700; }
+        .card b { display: block; font-size: 20px; margin-bottom: 6px; color: #fff; }
+        .card span { font-size: 13px; color: var(--blue); font-weight: 700; }
 
-        /* Поле ввода своей суммы */
+        /* Своя сумма */
         .custom-input-group { background: var(--card); border-radius: 18px; padding: 15px; border: 1px solid #242f3d; margin-top: 12px; display: none; }
         input { width: 100%; background: #242f3d; border: 1px solid #2b3745; border-radius: 12px; color: #fff; padding: 14px; font-size: 16px; box-sizing: border-box; outline: none; }
         
         .btn-pay { background: var(--blue); color: #fff; border: none; border-radius: 16px; padding: 18px; width: 100%; font-size: 16px; font-weight: 700; margin-top: 15px; }
-        .tabs { position: fixed; bottom: 0; width: 100%; background: #17212b; display: flex; padding: 10px 0; border-top: 1px solid #242f3d; padding-bottom: calc(10px + var(--tg-viewport-bottom-offset, 0px)); }
+
+        /* Нижние табы */
+        .tabs { position: fixed; bottom: 0; width: 100%; background: #17212b; display: flex; padding: 10px 0; border-top: 1px solid #242f3d; padding-bottom: calc(10px + var(--tg-viewport-bottom-offset, 0px)); z-index: 1000; }
         .tab-item { flex: 1; text-align: center; color: var(--gray); font-size: 11px; font-weight: 600; cursor: pointer; }
         .tab-item.active { color: var(--blue); }
         .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
@@ -50,10 +55,15 @@
                 <span style="color:var(--accent);">15%</span>
             </div>
             <div class="progress-bar"><div class="progress-fill"></div></div>
-            <div style="font-size: 11px; color: var(--gray);">Накопите 1 200 000 сум для получения NFT</div>
+            <div style="font-size: 10px; color: var(--gray);">Накопите 1 200 000 сум для получения NFT</div>
         </div>
 
-        <div class="section-header">Telegram Stars ⭐</div>
+        <div class="nav-menu">
+            <div class="nav-btn" onclick="scrollToId('stars_section')">⭐ Stars</div>
+            <div class="nav-btn" onclick="scrollToId('premium_section')">💎 Premium</div>
+        </div>
+
+        <div id="stars_section" class="section-header">Telegram Stars ⭐</div>
         <div class="grid">
             <div class="card" onclick="openPay('50 Stars', 14000)"><b>⭐ 50</b><span>14 000 сум</span></div>
             <div class="card" onclick="openPay('100 Stars', 27000)"><b>⭐ 100</b><span>27 000 сум</span></div>
@@ -72,11 +82,21 @@
             <button class="btn-pay" style="padding:12px;" onclick="payCustom()">Продолжить</button>
         </div>
 
-        <div class="section-header">Telegram Premium 💎</div>
+        <div id="premium_section" class="section-header">Telegram Premium 💎</div>
         <div class="grid">
-            <div class="card" onclick="openPay('Premium 1 мес', 36000)"><b>💎 1 мес</b><span>36 000 сум</span></div>
+            <div class="card" onclick="openPay('Premium 1 мес', 50000)"><b>💎 1 мес</b><span>50 000 сум</span></div>
+            <div class="card" onclick="openPay('Premium 3 мес', 180000)"><b>💎 3 мес</b><span>180 000 сум</span></div>
+            <div class="card" onclick="openPay('Premium 6 мес', 230000)"><b>💎 6 мес</b><span>230 000 сум</span></div>
             <div class="card popular" onclick="openPay('Premium 1 год', 400000)"><b>💎 1 год</b><span>400 000 сум</span></div>
         </div>
+    </div>
+</div>
+
+<div id="history_page" class="page">
+    <div class="container" style="text-align: center; margin-top: 50px;">
+        <span style="font-size: 50px;">📜</span>
+        <h3>История покупок</h3>
+        <p style="color: var(--gray);">Здесь будет список ваших заказов.</p>
     </div>
 </div>
 
@@ -93,13 +113,16 @@
         </div>
 
         <button class="btn-pay" onclick="confirmPay()">✅ Я ОПЛАТИЛ</button>
-        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px;" onclick="location.reload()">◀ Назад</button>
+        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px;" onclick="showPage('shop_page')">◀ Назад</button>
     </div>
 </div>
 
 <div class="tabs">
-    <div class="tab-item active" onclick="location.reload()">
+    <div class="tab-item active" onclick="showPage('shop_page', this)">
         <span class="tab-icon">🛒</span>Магазин
+    </div>
+    <div class="tab-item" onclick="showPage('history_page', this)">
+        <span class="tab-icon">📜</span>История
     </div>
     <div class="tab-item" onclick="window.open('https://t.me/wvwlvl', '_blank')">
         <span class="tab-icon">👨‍💻</span>Поддержка
@@ -110,6 +133,20 @@
     let tg = window.Telegram.WebApp;
     tg.expand();
     let order = { name: "", price: 0 };
+
+    function scrollToId(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showPage(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(el) {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        window.scrollTo(0,0);
+    }
 
     function toggleCustom() {
         let box = document.getElementById('custom_box');
@@ -131,8 +168,7 @@
         let rand = Math.floor(Math.random() * 900) + 100;
         order = { name: name, price: price + rand };
         document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
-        document.getElementById('shop_page').classList.remove('active');
-        document.getElementById('pay_page').classList.add('active');
+        showPage('pay_page');
     }
 
     function copyCard() {
