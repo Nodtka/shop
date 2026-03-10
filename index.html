@@ -1,32 +1,108 @@
-import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stars Shop Premium</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root { --bg: #1c1c1e; --card: #2c2c2e; --blue: #007aff; --text: #ffffff; --hint: #8e8e93; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; -webkit-user-select: none; }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
+        .item-card { background: var(--card); border-radius: 16px; padding: 16px; text-align: center; border: 1px solid #3a3a3c; cursor: pointer; }
+        .item-card:active { transform: scale(0.95); background: #3a3a3c; }
+        .item-card b { display: block; font-size: 18px; margin-bottom: 4px; }
+        .item-card span { color: var(--hint); font-size: 13px; }
 
-TOKEN = "8065291808:AAHNoVsjEPnjXMJkzcKdlN7Cohh310S7cXs"
-ADMIN_ID = 1746123296 
-WEB_APP_URL = "https://shop-three-woad.vercel.app" 
+        .pay-info { background: var(--card); border-radius: 20px; padding: 25px; text-align: center; margin-top: 20px; }
+        .card-num { background: #1c1c1e; padding: 15px; border-radius: 12px; font-family: monospace; font-size: 18px; margin: 15px 0; border: 1px dashed var(--blue); color: var(--blue); cursor: pointer; }
+        
+        .btn { background: var(--blue); color: white; border: none; padding: 15px; border-radius: 12px; width: 100%; font-size: 16px; font-weight: bold; margin-top: 10px; cursor: pointer; }
+        .btn-back { background: #3a3a3c; margin-top: 10px; }
+        
+        .history-item { background: var(--card); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--blue); text-align: left; }
+        .history-item small { color: var(--hint); display: block; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
 
-logging.basicConfig(level=logging.INFO)
+    <div id="main-page" class="page active">
+        <h2 style="color: #ffd700;">🌟 Магазин Stars</h2>
+        <div class="grid">
+            <div class="item-card" onclick="openPay('100 Stars', '24 000 сум')"><b>⭐ 100</b><span>24 000 сум</span></div>
+            <div class="item-card" onclick="openPay('250 Stars', '60 000 сум')"><b>⭐ 250</b><span>60 000 сум</span></div>
+            <div class="item-card" onclick="openPay('500 Stars', '118 000 сум')"><b>⭐ 500</b><span>118 000 сум</span></div>
+            <div class="item-card" onclick="openPay('1000 Stars', '235 000 сум')"><b>⭐ 1000</b><span>235 000 сум</span></div>
+        </div>
+        <button class="btn" style="background: none; border: 1px solid var(--blue); color: var(--blue); margin-top: 20px;" onclick="showHistory()">📜 История покупок</button>
+    </div>
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    kb = [[InlineKeyboardButton("🚀 ОТКРЫТЬ МАГАЗИН", web_app=WebAppInfo(url=WEB_APP_URL))]]
-    await update.message.reply_text("👋 Добро пожаловать! Нажми на кнопку, чтобы зайти в магазин.", reply_markup=InlineKeyboardMarkup(kb))
+    <div id="pay-page" class="page">
+        <h2>Оформление заказа</h2>
+        <div class="pay-info">
+            <h3 id="selected-item" style="margin: 0;">Товар</h3>
+            <p style="color: var(--hint);">Сумма: <b id="selected-price" style="color: white;">0</b></p>
+            <div style="font-size: 14px; margin-top: 20px; color: var(--hint);">Переведите на карту UzCard:</div>
+            <div class="card-num" onclick="copyCard()">5614 6821 1199 5470</div>
+            <p style="font-size: 12px; color: #ffd700;">Нажми на номер, чтобы скопировать</p>
+            <button class="btn" onclick="sendToBot()">✅ Я ОПЛАТИЛ</button>
+            <button class="btn btn-back" onclick="goBack()">Назад</button>
+        </div>
+    </div>
 
-async def handle_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    data = update.effective_message.web_app_data.data
-    user = update.effective_user
-    
-    # Ответ пользователю
-    await update.message.reply_text(f"💳 **Заявка принята!**\n\nВы подтвердили оплату: {data}\n\nТеперь, пожалуйста, **пришлите скриншот чека** сюда в чат, чтобы администратор проверил платеж.", parse_mode="Markdown")
-    
-    # Уведомление тебе (Админу)
-    await context.bot.send_message(chat_id=ADMIN_ID, text=f"🚨 **НОВЫЙ ЗАКАЗ!**\n👤 От: @{user.username} (ID: {user.id})\n📦 Товар: {data}")
+    <div id="history-page" class="page">
+        <h2>Мои покупки</h2>
+        <div id="history-list"></div>
+        <button class="btn btn-back" onclick="goBack()">В магазин</button>
+    </div>
 
-def main():
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_order))
-    print("🚀 Бот Pro-версии запущен!")
-    app.run_polling()
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let currentItem = "";
 
-if __name__ == '__main__': main()
+        function openPay(name, price) {
+            currentItem = name;
+            document.getElementById('selected-item').innerText = name;
+            document.getElementById('selected-price').innerText = price;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('pay-page').classList.add('active');
+        }
+
+        function goBack() {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('main-page').classList.add('active');
+        }
+
+        function copyCard() {
+            navigator.clipboard.writeText("5614682111995470");
+            tg.showAlert("Номер карты скопирован!");
+        }
+
+        function sendToBot() {
+            let order = { product: currentItem, date: new Date().toLocaleString() };
+            let history = JSON.parse(localStorage.getItem('orders') || '[]');
+            history.unshift(order);
+            localStorage.setItem('orders', JSON.stringify(history));
+            
+            tg.sendData("ОПЛАТА: " + currentItem);
+            tg.close();
+        }
+
+        function showHistory() {
+            let history = JSON.parse(localStorage.getItem('orders') || '[]');
+            let list = document.getElementById('history-list');
+            list.innerHTML = history.length ? "" : "<p style='color:gray;'>У вас пока нет покупок</p>";
+            history.forEach(h => {
+                list.innerHTML += `<div class="history-item"><small>${h.date}</small><b>${h.product}</b><br><span style="color:#4cd964">● В обработке</span></div>`;
+            });
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('history-page').classList.add('active');
+        }
+    </script>
+</body>
+</html>
