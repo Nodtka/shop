@@ -1,74 +1,32 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg: var(--tg-theme-bg-color, #17212b);
-            --text: var(--tg-theme-text-color, #ffffff);
-            --hint: var(--tg-theme-hint-color, #708499);
-            --btn: var(--tg-theme-button-color, #3390ec);
-            --btn-text: var(--tg-theme-button-text-color, #ffffff);
-            --sec-bg: var(--tg-theme-secondary-bg-color, #232e3c);
-        }
-        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .card { background: var(--sec-bg); padding: 15px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
-        .card:active { border-color: var(--btn); transform: scale(0.98); }
-        .card.wide { grid-column: span 2; }
-        .price { color: var(--hint); font-size: 0.9em; margin-top: 5px; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--hint); background: var(--bg); color: var(--text); box-sizing: border-box; margin-top: 10px; outline: none; }
-        input:focus { border-color: var(--btn); }
-        h3 { margin-bottom: 15px; border-left: 4px solid var(--btn); padding-left: 10px; font-size: 1.1em; }
-        .footer { text-align: center; font-size: 0.8em; color: var(--hint); margin-top: 20px; }
-    </style>
-</head>
-<body>
-    <h3>🌟 Telegram Stars</h3>
-    <div class="grid">
-        <div class="card" onclick="buy('100 Stars')">⭐ 100<div class="price">24 000 сум</div></div>
-        <div class="card" onclick="buy('250 Stars')">⭐ 250<div class="price">60 000 сум</div></div>
-        <div class="card" onclick="buy('500 Stars')">⭐ 500<div class="price">118 000 сум</div></div>
-        <div class="card" onclick="buy('1000 Stars')">⭐ 1000<div class="price">235 000 сум</div></div>
-        <div class="card wide">
-            <span>Своя сумма (от 50)</span>
-            <input type="number" id="customAmount" placeholder="Например: 56" oninput="checkCustom()">
-        </div>
-    </div>
+import logging
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 
-    <h3>💎 Telegram Premium</h3>
-    <div class="grid">
-        <div class="card" onclick="buy('Premium 3m')">3 месяца<div class="price">180 000 сум</div></div>
-        <div class="card" onclick="buy('Premium 6m')">6 месяцев<div class="price">230 000 сум</div></div>
-        <div class="card wide" onclick="buy('Premium 12m')">12 месяцев<div class="price">400 000 сум</div></div>
-    </div>
+TOKEN = "8065291808:AAHNoVsjEPnjXMJkzcKdlN7Cohh310S7cXs"
+ADMIN_ID = 1746123296 
+WEB_APP_URL = "https://shop-three-woad.vercel.app" 
 
-    <div class="footer">Выберите товар, чтобы продолжить</div>
+logging.basicConfig(level=logging.INFO)
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем окно на максимум
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    kb = [[InlineKeyboardButton("🚀 ОТКРЫТЬ МАГАЗИН", web_app=WebAppInfo(url=WEB_APP_URL))]]
+    await update.message.reply_text("👋 Добро пожаловать! Нажми на кнопку, чтобы зайти в магазин.", reply_markup=InlineKeyboardMarkup(kb))
 
-        // Функция для покупки готовых паков
-        function buy(item) {
-            tg.sendData(item); // Отправляем название товара в чат боту
-        }
+async def handle_order(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    data = update.effective_message.web_app_data.data
+    user = update.effective_user
+    
+    # Ответ пользователю
+    await update.message.reply_text(f"💳 **Заявка принята!**\n\nВы подтвердили оплату: {data}\n\nТеперь, пожалуйста, **пришлите скриншот чека** сюда в чат, чтобы администратор проверил платеж.", parse_mode="Markdown")
+    
+    # Уведомление тебе (Админу)
+    await context.bot.send_message(chat_id=ADMIN_ID, text=f"🚨 **НОВЫЙ ЗАКАЗ!**\n👤 От: @{user.username} (ID: {user.id})\n📦 Товар: {data}")
 
-        // Логика для ввода своего количества звезд
-        function checkCustom() {
-            let val = document.getElementById('customAmount').value;
-            if (val >= 50) {
-                tg.MainButton.setText(`КУПИТЬ ${val} STARS`);
-                tg.MainButton.show();
-                tg.MainButton.onClick(() => {
-                    tg.sendData(`${val} Stars`);
-                });
-            } else {
-                tg.MainButton.hide();
-            }
-        }
-    </script>
-</body>
-</html>
+def main():
+    app = Application.builder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, handle_order))
+    print("🚀 Бот Pro-версии запущен!")
+    app.run_polling()
+
+if __name__ == '__main__': main()
