@@ -3,132 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Premium Shop</title>
+    <title>Stars Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg-page: #000000;
-            --bg-card: #1c1c1e;
-            --blue: #007aff;
-            --red: #ff3b30;
-            --text-main: #ffffff;
-            --text-secondary: #8e8e93;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-main);
-            margin: 0; padding: 16px;
-            padding-bottom: env(safe-area-inset-bottom);
-            -webkit-user-select: none;
-        }
-        .page { display: none; animation: fadeIn 0.3s ease; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .section-title { font-size: 22px; font-weight: 800; margin: 25px 0 12px; letter-spacing: -0.5px; }
+        :root { --bg: #000000; --card: #1c1c1e; --blue: #007aff; --white: #ffffff; --gray: #8e8e93; --red: #ff453a; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--bg); color: var(--white); margin: 0; padding: 16px; -webkit-user-select: none; }
+        .page { display: none; } .active { display: block; }
+        .section-title { font-size: 20px; font-weight: 700; margin: 20px 0 12px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.5px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card {
-            background: var(--bg-card); border-radius: 16px; padding: 22px;
-            text-align: center; border: 1px solid #2c2c2e; transition: 0.2s;
-        }
-        .card:active { transform: scale(0.96); background: #2c2c2e; }
-        .card b { display: block; font-size: 26px; font-weight: 800; margin-bottom: 4px; }
-        .card span { font-size: 16px; color: var(--text-secondary); font-weight: 600; }
-
-        .details-box { background: var(--bg-card); border-radius: 16px; padding: 20px; border: 1px solid #2c2c2e; margin-bottom: 15px; }
-        .info-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 600; }
-        input {
-            width: 100%; box-sizing: border-box; background: #2c2c2e; border: 1px solid #3a3a3c;
-            border-radius: 12px; color: white; padding: 14px; font-size: 17px; font-weight: 600; outline: none;
-        }
-        .alert-box { background: #2a1b1b; border-radius: 14px; padding: 16px; border: 1px solid #4a1f1f; margin-bottom: 15px; }
-        .alert-title { font-size: 15px; font-weight: 800; color: var(--red); margin-bottom: 4px; }
-        .alert-text { font-size: 14px; font-weight: 600; line-height: 1.4; }
+        .card { background: var(--card); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #2c2c2e; transition: transform 0.1s; }
+        .card:active { transform: scale(0.97); }
+        .card b { display: block; font-size: 24px; margin-bottom: 4px; }
+        .card span { color: var(--gray); font-size: 14px; font-weight: 600; }
         
-        .copy-row { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
-        .final-sum { font-size: 34px; font-weight: 900; letter-spacing: -1px; }
-        .btn-copy { background: #2c2c2e; color: var(--blue); border: none; border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 700; }
+        .box { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #2c2c2e; }
+        input { width: 100%; box-sizing: border-box; background: #2c2c2e; border: 1px solid #3a3a3c; border-radius: 12px; color: white; padding: 14px; font-size: 16px; outline: none; margin-top: 8px; }
         
-        .karta-box { background: var(--bg-card); padding: 18px; border-radius: 16px; border: 1px solid #2c2c2e; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .karta-num { font-size: 18px; font-weight: 700; font-family: monospace; }
+        .payment-sum { background: var(--red); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 15px; }
+        .sum-val { font-size: 32px; font-weight: 900; margin: 5px 0; }
+        .btn-copy { background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 10px; padding: 8px 16px; font-weight: 700; font-size: 13px; margin-top: 8px; }
         
-        .btn-main { background: var(--blue); color: white; border: none; border-radius: 14px; padding: 18px; width: 100%; font-size: 18px; font-weight: 800; margin-bottom: 12px; }
-        .btn-back { background: #2c2c2e; color: white; border: none; border-radius: 14px; padding: 18px; width: 100%; font-size: 18px; font-weight: 800; }
+        .karta { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 16px; border-radius: 16px; margin-bottom: 25px; border: 1px solid #2c2c2e; }
+        .btn-main { background: var(--blue); color: white; border: none; border-radius: 16px; padding: 18px; width: 100%; font-size: 17px; font-weight: 700; }
     </style>
 </head>
 <body>
-    <div id="main-page" class="page active">
+    <div id="m" class="page active">
         <div class="section-title">Telegram Stars</div>
         <div class="grid">
-            <div class="card" onclick="selectProduct('100 Stars', 24000)"><b>100</b><span>24 000 сум</span></div>
-            <div class="card" onclick="selectProduct('250 Stars', 60000)"><b>250</b><span>60 000 сум</span></div>
-            <div class="card" onclick="selectProduct('500 Stars', 118000)"><b>500</b><span>118 000 сум</span></div>
-            <div class="card" onclick="selectProduct('1000 Stars', 235000)"><b>1000</b><span>235 000 сум</span></div>
-        </div>
-        <div class="section-title">Telegram Premium</div>
-        <div class="grid">
-            <div class="card" onclick="selectProduct('Premium 1 мес', 50000)"><b>1 мес</b><span>50 000 сум</span></div>
-            <div class="card" onclick="selectProduct('Premium 12 мес', 400000)"><b>12 мес</b><span>400 000 сум</span></div>
+            <div class="card" onclick="sel('100 Stars', 24000)"><b>100</b><span>24 000 сум</span></div>
+            <div class="card" onclick="sel('250 Stars', 60000)"><b>250</b><span>60 000 сум</span></div>
+            <div class="card" onclick="sel('500 Stars', 118000)"><b>500</b><span>118 000 сум</span></div>
+            <div class="card" onclick="sel('1000 Stars', 235000)"><b>1000</b><span>235 000 сум</span></div>
         </div>
     </div>
 
-    <div id="pay-page" class="page">
-        <div class="section-title" style="text-align:center;">Оформление заказа</div>
-        <div class="details-box">
-            <div class="info-label">Никнейм или ID получателя</div>
-            <input type="text" id="user-nick" placeholder="@username">
+    <div id="p" class="page">
+        <div class="box">
+            <div style="font-size:13px; color:var(--gray); font-weight: 600;">ВАШ @USERNAME / ID</div>
+            <input type="text" id="nick" placeholder="@username">
         </div>
-        <div class="alert-box">
-            <div class="alert-title">ВНИМАНИЕ!</div>
-            <div class="alert-text">Переведите СТРОГО указанную сумму. Любая ошибка в цифрах приведет к отмене платежа.</div>
+        <div class="payment-sum">
+            <div style="font-size: 12px; font-weight: 800; opacity: 0.9;">СУММА К ОПЛАТЕ:</div>
+            <div class="sum-val" id="fsum">0 сум</div>
+            <button class="btn-copy" onclick="cp('fsum', true)">Копировать сумму</button>
         </div>
-        <div class="details-box">
-            <div class="info-label">Сумма к переводу</div>
-            <div class="copy-row">
-                <div class="final-sum" id="final-sum">0 сум</div>
-                <button class="btn-copy" onclick="copyVal('final-sum', true)">Копировать</button>
-            </div>
+        <div class="karta">
+            <div style="font-family:monospace; font-size:17px; font-weight: 700;">5614 6821 1199 5470</div>
+            <button class="btn-copy" style="background:#2c2c2e; color:var(--blue);" onclick="cp('5614682111995470', false)">Копировать</button>
         </div>
-        <div class="karta-box">
-            <div class="karta-num">5614 6821 1199 5470</div>
-            <button class="btn-copy" onclick="copyVal('5614682111995470', false)">Копировать</button>
-        </div>
-        <button class="btn-main" onclick="sendOrder()">✅ Я ОПЛАТИЛ</button>
-        <button class="btn-back" onclick="goBack()">НАЗАД</button>
+        <button class="btn-main" onclick="send()">✅ Я ОПЛАТИЛ</button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        let currentP = 0, currentN = "";
-
-        function selectProduct(n, p) {
-            currentN = n;
-            let code = Math.floor(Math.random() * 899) + 100;
-            currentP = p + code;
-            document.getElementById('final-sum').innerText = currentP.toLocaleString() + " сум";
-            document.getElementById('main-page').classList.remove('active');
-            document.getElementById('pay-page').classList.add('active');
+        let tg = window.Telegram.WebApp; tg.expand(); let curP=0, curN="";
+        function sel(n, p) { 
+            curN=n; curP=p+(Math.floor(Math.random()*899)+100); 
+            document.getElementById('fsum').innerText=curP.toLocaleString()+" сум"; 
+            document.getElementById('m').classList.remove('active'); document.getElementById('p').classList.add('active'); 
         }
-
-        function goBack() {
-            document.getElementById('pay-page').classList.remove('active');
-            document.getElementById('main-page').classList.add('active');
+        function cp(v,is){ 
+            let t=is?document.getElementById(v).innerText.replace(/[^0-9]/g,''):v; 
+            navigator.clipboard.writeText(t); tg.showAlert("Скопировано!"); 
         }
-
-        function copyVal(v, isId) {
-            let t = isId ? document.getElementById(v).innerText.replace(/[^0-9]/g, '') : v;
-            navigator.clipboard.writeText(t);
-            tg.showAlert("Скопировано!");
-        }
-
-        function sendOrder() {
-            let nick = document.getElementById('user-nick').value;
-            if (nick.length < 3) return tg.showAlert("Введите ник!");
-            tg.sendData(`ЗАКАЗ: ${currentN} | НИК: ${nick} | СУММА: ${currentP}`);
-            tg.showAlert("✅ Заявка отправлена! Бот прислал инструкции в чат.");
-            // tg.close(); УБРАНО: окно теперь не закрывается само
+        function send(){ 
+            let n=document.getElementById('nick').value; 
+            if(n.length<3) return tg.showAlert("Введите ник получателя!"); 
+            tg.sendData(`ЗАКАЗ: ${curN} | НИК: ${n} | СУММА: ${curP}`); 
+            tg.showAlert("✅ Заявка отправлена! Пришлите скриншот чека в чат."); 
         }
     </script>
 </body>
