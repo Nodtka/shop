@@ -3,43 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Premium Stars Shop</title>
+    <title>Starsbot Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root { --bg: #0b0e11; --card: #15191d; --blue: #37aee2; --text: #ffffff; --gray: #707579; --accent: #febd2f; }
-        body { font-family: -apple-system, blinkmacsystemfont, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; transition: 0.3s; }
-        .container { padding: 16px; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body { font-family: -apple-system, blinkmacsystemfont, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; }
+        .container { padding: 16px; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Профиль и Бонус */
-        .profile-card { background: linear-gradient(135deg, #1d2733, #15191d); border-radius: 20px; padding: 20px; border: 1px solid #242f3d; margin-bottom: 20px; }
-        .nft-status { font-size: 13px; color: var(--accent); font-weight: bold; margin-bottom: 8px; display: flex; justify-content: space-between; }
-        .progress-bar { height: 8px; background: #242f3d; border-radius: 10px; overflow: hidden; }
-        .progress-fill { width: 15%; height: 100%; background: var(--accent); box-shadow: 0 0 10px var(--accent); transition: 1s; }
+        /* Тот самый дизайн из скринов */
+        .profile-card { background: #1c2228; border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid #242f3d; }
+        .progress-bar { height: 6px; background: #242f3d; border-radius: 10px; margin: 12px 0; overflow: hidden; }
+        .progress-fill { width: 15%; height: 100%; background: var(--accent); box-shadow: 0 0 10px rgba(254, 189, 47, 0.5); }
 
-        /* Сетка товаров */
-        .section-header { font-size: 14px; font-weight: 700; color: var(--gray); text-transform: uppercase; margin: 25px 0 12px 5px; letter-spacing: 1px; }
+        .section-header { font-size: 13px; font-weight: 800; color: var(--gray); text-transform: uppercase; margin: 25px 0 15px 5px; letter-spacing: 0.5px; }
+        
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: var(--card); border-radius: 16px; padding: 18px; text-align: center; border: 1px solid #242f3d; transition: 0.2s; position: relative; overflow: hidden; }
-        .card:active { transform: scale(0.95); background: #1c2228; }
-        .card.popular::after { content: "TOP"; position: absolute; top: 0; right: 0; background: var(--blue); font-size: 10px; padding: 2px 8px; border-radius: 0 0 0 10px; font-weight: 900; }
-        .card b { display: block; font-size: 20px; margin-bottom: 5px; }
-        .card span { font-size: 14px; color: var(--blue); font-weight: 600; }
+        .card { background: var(--card); border-radius: 18px; padding: 22px 10px; text-align: center; border: 1px solid #242f3d; position: relative; transition: 0.2s; }
+        .card:active { transform: scale(0.96); background: #1c2228; }
+        
+        /* Плашка TOP как на фото */
+        .card.popular::after { content: "TOP"; position: absolute; top: 0; right: 0; background: var(--blue); color: #fff; font-size: 9px; font-weight: 900; padding: 3px 10px; border-radius: 0 15px 0 12px; }
+        
+        .card b { display: block; font-size: 22px; margin-bottom: 6px; color: #fff; }
+        .card span { font-size: 14px; color: var(--blue); font-weight: 700; }
 
-        /* Навигация (Tabs) */
-        .tabs { position: fixed; bottom: 0; width: 100%; background: #17212b; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #242f3d; z-index: 100; padding-bottom: calc(12px + var(--tg-viewport-bottom-offset, 0px)); }
-        .tab-item { text-align: center; color: var(--gray); font-size: 11px; font-weight: 600; flex: 1; }
+        /* Поле ввода другой суммы */
+        .custom-input-group { background: var(--card); border-radius: 18px; padding: 15px; border: 1px solid #242f3d; margin-top: 12px; display: none; }
+        input { width: 100%; background: #242f3d; border: 1px solid #2b3745; border-radius: 12px; color: #fff; padding: 14px; font-size: 16px; box-sizing: border-box; outline: none; }
+        
+        /* Кнопки и Табы */
+        .btn-pay { background: var(--blue); color: #fff; border: none; border-radius: 16px; padding: 18px; width: 100%; font-size: 16px; font-weight: 700; margin-top: 15px; }
+        .tabs { position: fixed; bottom: 0; width: 100%; background: #17212b; display: flex; padding: 10px 0; border-top: 1px solid #242f3d; padding-bottom: calc(10px + var(--tg-viewport-bottom-offset, 0px)); }
+        .tab-item { flex: 1; text-align: center; color: var(--gray); font-size: 11px; font-weight: 600; text-decoration: none; }
         .tab-item.active { color: var(--blue); }
         .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
 
-        /* Страницы */
         .page { display: none; } .page.active { display: block; }
-        
-        /* Оплата */
-        .pay-info { background: #1c2228; border-radius: 15px; padding: 15px; border-left: 4px solid var(--blue); margin: 15px 0; font-size: 13px; line-height: 1.5; }
-        input { width: 100%; background: #242f3d; border: 1px solid #2b3745; border-radius: 12px; color: #fff; padding: 14px; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--blue); }
-        .btn-pay { background: var(--blue); color: #fff; border: none; border-radius: 15px; padding: 18px; width: 100%; font-size: 16px; font-weight: 700; margin-top: 20px; box-shadow: 0 4px 15px rgba(55, 174, 226, 0.3); }
     </style>
 </head>
 <body>
@@ -47,98 +47,105 @@
 <div id="shop_page" class="page active">
     <div class="container">
         <div class="profile-card">
-            <div class="nft-status">
-                <span>🎁 Прогресс NFT (Бонус)</span>
-                <span>15%</span>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:bold;">
+                <span style="color:var(--accent);">🎁 Прогресс NFT (Бонус)</span>
+                <span style="color:var(--accent);">15%</span>
             </div>
             <div class="progress-bar"><div class="progress-fill"></div></div>
-            <p style="font-size: 11px; color: var(--gray); margin-top: 10px;">Накопите 1 200 000 сум покупок для получения NFT</p>
+            <div style="font-size: 11px; color: var(--gray);">Накопите 1 200 000 сум для получения NFT</div>
         </div>
 
         <div class="section-header">Telegram Stars ⭐</div>
         <div class="grid">
             <div class="card" onclick="openPay('50 Stars', 14000)"><b>⭐ 50</b><span>14 000 сум</span></div>
+            <div class="card" onclick="openPay('100 Stars', 27000)"><b>⭐ 100</b><span>27 000 сум</span></div>
             <div class="card popular" onclick="openPay('250 Stars', 60000)"><b>⭐ 250</b><span>60 000 сум</span></div>
-            <div class="card" onclick="openPay('1000 Stars', 235000)"><b>⭐ 1000</b><span>235 000 сум</span></div>
-            <div class="card" onclick="openPay('5000 Stars', 1200000)"><b>⭐ 5000</b><span>1.2M сум</span></div>
+            <div class="card" onclick="openPay('500 Stars', 118000)"><b>⭐ 500</b><span>118 000 сум</span></div>
+        </div>
+        
+        <div class="card" style="margin-top:12px; width:100%; display:block; grid-column: span 2;" onclick="toggleCustom()">
+            <b>⚙️ Указать другую сумму</b>
+            <span>Минимум 50 ⭐</span>
+        </div>
+
+        <div id="custom_box" class="custom-input-group">
+            <input type="number" id="custom_stars" placeholder="Сколько звёзд нужно?" oninput="calcPrice()">
+            <div id="res_price" style="margin-top:10px; color:var(--blue); font-weight:bold; text-align:center;">0 сум</div>
+            <button class="btn-pay" style="padding:12px;" onclick="payCustom()">Продолжить</button>
         </div>
 
         <div class="section-header">Telegram Premium 💎</div>
         <div class="grid">
-            <div class="card" onclick="openPay('Premium 1 мес', 50000)"><b>💎 1 мес</b><span>50 000 сум</span></div>
-            <div class="card popular" onclick="openPay('Premium 12 мес', 400000)"><b>💎 1 год</b><span>400 000 сум</span></div>
+            <div class="card" onclick="openPay('Premium 1 мес', 36000)"><b>💎 1 мес</b><span>36 000 сум</span></div>
+            <div class="card popular" onclick="openPay('Premium 1 год', 400000)"><b>💎 1 год</b><span>400 000 сум</span></div>
         </div>
-    </div>
-</div>
-
-<div id="history_page" class="page">
-    <div class="container" style="text-align: center; margin-top: 50px;">
-        <span style="font-size: 50px;">📦</span>
-        <h3>История пуста</h3>
-        <p style="color: var(--gray);">Ваши покупки появятся здесь после подтверждения</p>
     </div>
 </div>
 
 <div id="pay_page" class="page">
     <div class="container">
-        <div class="section-header">Оформление</div>
+        <div class="section-header">Оформление заказа</div>
         <input type="text" id="target_user" placeholder="@username получателя">
+        <div id="final_price" style="font-size: 32px; font-weight: 900; text-align: center; margin: 25px 0; color: var(--accent);">0 сум</div>
         
-        <div class="pay-info">
-            Переведите <b>ровную сумму</b>. Копейки и рандомные цифры в конце помогают нам быстрее найти ваш платеж.
-        </div>
-
-        <div id="final_price" style="font-size: 36px; font-weight: 900; text-align: center; margin: 20px 0; color: var(--accent);">0 сум</div>
-
         <div class="card" style="text-align: left; padding: 20px;">
             <span style="font-size: 11px; color: var(--gray);">КАРТА (UZCARD)</span>
-            <div style="font-size: 18px; letter-spacing: 1px; margin: 5px 0;">5614 6821 1199 5470</div>
-            <button style="color: var(--blue); background: none; border: none; padding: 0; font-weight: bold;" onclick="copyCard()">Копировать номер</button>
+            <div style="font-size: 18px; letter-spacing: 1px; margin: 8px 0; font-weight:bold;">5614 6821 1199 5470</div>
+            <button style="color: var(--blue); background: none; border: none; padding: 0; font-weight: bold; cursor:pointer;" onclick="copyCard()">Копировать номер</button>
         </div>
 
         <button class="btn-pay" onclick="confirmPay()">✅ Я ОПЛАТИЛ</button>
-        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:15px;" onclick="showPage('shop_page')">Отмена</button>
+        <button style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px; font-weight:600;" onclick="location.reload()">◀ Вернуться назад</button>
     </div>
 </div>
 
 <div class="tabs">
-    <div class="tab-item active" onclick="showPage('shop_page', this)"><span class="tab-icon">🛒</span>Магазин</div>
-    <div class="tab-item" onclick="showPage('history_page', this)"><span class="tab-icon">📜</span>История</div>
-    <div class="tab-item" onclick="window.open('https://t.me/wwvlv1')"><span class="tab-icon">👨‍💻</span>Поддержка</div>
+    <div class="tab-item active" onclick="location.reload()">
+        <span class="tab-icon">🛒</span>Магазин
+    </div>
+    <div class="tab-item" onclick="window.open('https://t.me/wwvlvl', '_blank')">
+        <span class="tab-icon">👨‍💻</span>Поддержка
+    </div>
 </div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
-    let currentOrder = { name: "", price: 0 };
+    let order = { name: "", price: 0 };
 
-    function showPage(id, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(el) {
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-        }
+    function toggleCustom() {
+        let box = document.getElementById('custom_box');
+        box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function calcPrice() {
+        let val = document.getElementById('custom_stars').value;
+        document.getElementById('res_price').innerText = (val * 245).toLocaleString() + " сум";
+    }
+
+    function payCustom() {
+        let val = document.getElementById('custom_stars').value;
+        if(val < 50) return tg.showAlert("Минимум 50 звёзд!");
+        openPay(val + " Stars", val * 245);
     }
 
     function openPay(name, price) {
-        // Добавляем копейки для уникальности платежа
-        let randomAdd = Math.floor(Math.random() * 999) + 100;
-        currentOrder = { name: name, price: price + randomAdd };
-        document.getElementById('final_price').innerText = currentOrder.price.toLocaleString() + " сум";
-        showPage('pay_page');
+        let rand = Math.floor(Math.random() * 900) + 100;
+        order = { name: name, price: price + rand };
+        document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
+        document.getElementById('shop_page').classList.remove('active');
+        document.getElementById('pay_page').classList.add('active');
     }
 
     function copyCard() {
         navigator.clipboard.writeText('5614682111995470');
-        tg.HapticFeedback.notificationOccurred('success');
         tg.showAlert("Номер карты скопирован!");
     }
 
     function confirmPay() {
         let user = document.getElementById('target_user').value;
-        if(user.length < 3) return tg.showAlert("Укажите @username!");
-        tg.sendData(`ORDER:${currentOrder.name}|USER:${user}|SUM:${currentOrder.price}`);
+        if(user.length < 3) return tg.showAlert("Укажите ник получателя!");
+        tg.sendData(`BUY:${order.name}|FOR:${user}|SUM:${order.price}`);
         tg.close();
     }
 </script>
