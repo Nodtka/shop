@@ -6,73 +6,86 @@
     <title>Starsbot Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; padding: 15px; overflow-x: hidden; }
-        .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #111; padding: 5px; border-radius: 12px; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; color: #555; font-weight: bold; transition: 0.3s; }
-        .tab.active { background: #3b82f6; color: #fff; }
-        .card { background: #0a0a0a; padding: 18px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .price { color: #facc15; font-weight: 800; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; padding: 15px; }
+        .section-title { color: #3b82f6; font-size: 14px; font-weight: bold; margin: 25px 0 10px 5px; text-transform: uppercase; letter-spacing: 1px; border-left: 3px solid #3b82f6; padding-left: 10px; }
+        .card { background: #0a0a0a; padding: 18px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+        .card:active { transform: scale(0.98); background: #111; }
+        .price { color: #facc15; font-weight: 800; font-size: 16px; }
         .btn { background: #3b82f6; color: #fff; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
-        .input-group { position: relative; z-index: 10; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #3b82f6; background: #111; color: #fff; box-sizing: border-box; font-size: 16px; outline: none; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #3b82f6; background: #111; color: #fff; box-sizing: border-box; font-size: 16px; outline: none; margin-bottom: 15px; }
         .page { display: none; } .active-page { display: block; }
+        
+        /* NFT Progress */
+        .nft-status { background: #0a0a0a; border: 1px dashed #facc15; padding: 15px; border-radius: 15px; text-align: center; margin-bottom: 15px; }
+        .progress-container { background: #1a1a1a; height: 12px; border-radius: 6px; margin: 15px 0; overflow: hidden; }
+        .progress-bar { background: linear-gradient(90deg, #3b82f6, #facc15); width: 0%; height: 100%; transition: width 2.5s ease-in-out; }
     </style>
 </head>
 <body>
     <div id="p1" class="page active-page">
-        <div class="tabs">
-            <div id="t_s" class="tab active" onclick="tab('s')">Stars</div>
-            <div id="t_p" class="tab" onclick="tab('p')">Premium</div>
-        </div>
-        
-        <div id="s_sec">
-            <div class="card" onclick="step2('50 Stars', 12500)"><span>50 Stars</span><span class="price">12 500</span></div>
-            <div class="card" onclick="step2('250 Stars', 62500)"><span>250 Stars</span><span class="price">62 500</span></div>
-            <div class="card" onclick="step2('500 Stars', 125000)"><span>500 Stars</span><span class="price">125 000</span></div>
-        </div>
+        <div class="section-title">✨ Telegram Stars</div>
+        <div class="card" onclick="show('p_custom')"><span>✍️ Своё количество (от 50)</span><span class="price">Указать</span></div>
+        <div class="card" onclick="step2('50 Stars', 12500)"><span>50 Stars</span><span class="price">12 500</span></div>
+        <div class="card" onclick="step2('100 Stars', 25000)"><span>100 Stars</span><span class="price">25 000</span></div>
+        <div class="card" onclick="step2('250 Stars', 62500)"><span>250 Stars</span><span class="price">62 500</span></div>
+        <div class="card" onclick="step2('500 Stars', 125000)"><span>500 Stars</span><span class="price">125 000</span></div>
 
-        <div id="p_sec" style="display:none">
-            <div class="card" onclick="step2('Premium 1 мес', 50000)"><span>1 месяц</span><span class="price">50 000</span></div>
-            <div class="card" onclick="step2('Premium 3 мес', 180000)"><span>3 месяца</span><span class="price">180 000</span></div>
-            <div class="card" onclick="step2('Premium 6 мес', 230000)"><span>6 месяцев</span><span class="price">230 000</span></div>
-            <div class="card" onclick="step2('Premium 12 мес', 400000)"><span>12 месяцев</span><span class="price">400 000</span></div>
-        </div>
+        <div class="section-title">💎 Telegram Premium</div>
+        <div class="card" onclick="step2('Premium 1 мес', 50000)"><span>1 месяц</span><span class="price">50 000</span></div>
+        <div class="card" onclick="step2('Premium 3 мес', 180000)"><span>3 месяца</span><span class="price">180 000</span></div>
+        <div class="card" onclick="step2('Premium 6 мес', 230000)"><span>6 месяцев</span><span class="price">230 000</span></div>
+        <div class="card" onclick="step2('Premium 12 мес', 400000)"><span>12 месяцев</span><span class="price">400 000</span></div>
+
+        <div class="section-title">🎁 Эксклюзив</div>
+        <div class="card" style="border-color: #facc15;" onclick="step2('NFT Gift Pack', 1200000)"><span>🖼 NFT Подарок</span><span class="price">1 200 000</span></div>
         
-        <button class="btn" style="background:#1a1a1a; color:#888; margin-top: 30px;" onclick="window.open('https://t.me/wvwlvl')">👨‍💻 ПОДДЕРЖКА</button>
+        <button class="btn" style="background:#1a1a1a; color:#888; margin-top: 30px;" onclick="window.open('https://t.me/wvwlvl')">👨‍💻 ПОДДЕРЖКА @wvwlvl</button>
+    </div>
+
+    <div id="p_custom" class="page">
+        <h3>Введите кол-во звёзд</h3>
+        <input type="number" id="custom_count" placeholder="Минимум 50" oninput="calc()">
+        <p id="custom_res" style="text-align: center; color: #facc15; font-weight: bold;"></p>
+        <button class="btn" onclick="step_custom_done()">Далее</button>
+        <button class="btn" style="background:transparent;" onclick="show('p1')">Назад</button>
     </div>
 
     <div id="p2" class="page">
-        <h3 style="text-align:center;">Укажите ваш @username</h3>
-        <p style="font-size: 12px; color: #666; text-align: center;">Куда отправить товар?</p>
-        <div class="input-group">
-            <input type="text" id="nick" placeholder="@username" autocomplete="off">
-        </div>
-        <button class="btn" onclick="step3()">Подтвердить</button>
-        <button class="btn" style="background:transparent; color:#555;" onclick="show('p1')">Назад</button>
+        <h3 style="text-align:center;">Кому отправить?</h3>
+        <input type="text" id="nick" placeholder="@username получателя">
+        <button class="btn" onclick="step3()">Перейти к оплате</button>
     </div>
 
     <div id="p3" class="page">
-        <div style="background:#0a0a0a; padding:20px; border-radius:15px; border: 1px dashed #3b82f6; text-align:center;">
-            <p style="color:#aaa;">Перевод на карту (Click/Payme):</p>
-            <code style="font-size:20px; color:#fff; letter-spacing:1px;">5614682111995470</code>
-            <div style="margin-top:20px; padding:10px; background:#111; border-radius:10px;">
-                <span id="sum_txt" style="color:#facc15; font-size:18px; font-weight:bold;"></span>
-            </div>
+        <div id="nft_block" style="display:none;" class="nft-status">
+            <span>🔥 Получение NFT Подарка...</span>
+            <div class="progress-container"><div id="bar" class="progress-bar"></div></div>
+            <span style="font-size: 12px; color: #facc15;">Сделай покупку и забери NFT!</span>
         </div>
-        <p style="font-size:11px; color:#555; text-align:center; margin-top:15px;">Нажмите кнопку ниже, магазин закроется, и бот попросит прислать скриншот чека.</p>
+
+        <div style="background:#0a0a0a; padding:20px; border-radius:15px; border: 1px dashed #3b82f6; text-align:center;">
+            <p style="color:#aaa;">Перевод на карту:</p>
+            <code style="font-size:18px; color:#fff;">5614682111995470</code>
+            <p id="sum_txt" style="color:#facc15; font-size:20px; margin-top:15px; font-weight:bold;"></p>
+        </div>
         <button class="btn" onclick="send()">✅ Я ОПЛАТИЛ(А)</button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp; 
-        tg.expand();
+        let tg = window.Telegram.WebApp; tg.expand();
         let o = {};
 
-        function tab(t){
-            document.getElementById('s_sec').style.display = t=='s'?'block':'none';
-            document.getElementById('p_sec').style.display = t=='p'?'block':'none';
-            ['t_s','t_p'].forEach(i=>document.getElementById(i).className='tab');
-            document.getElementById('t_'+t).className='tab active';
+        function calc() {
+            let val = document.getElementById('custom_count').value;
+            if(val >= 50) {
+                document.getElementById('custom_res').innerText = (val * 250).toLocaleString() + ' сум';
+            } else { document.getElementById('custom_res').innerText = ''; }
+        }
+
+        function step_custom_done() {
+            let val = document.getElementById('custom_count').value;
+            if(val < 50) return alert('Минимум 50!');
+            step2(val + ' Stars', val * 250);
         }
 
         function step2(n,p){ 
@@ -82,8 +95,12 @@
 
         function step3(){
             o.u = document.getElementById('nick').value.trim();
-            if(!o.u) { alert('Пожалуйста, введите ваш ник!'); return; }
+            if(!o.u) return alert('Введите @username!');
             document.getElementById('sum_txt').innerText = o.n + ' — ' + o.p.toLocaleString() + ' сум';
+            if(o.n.includes('NFT')) {
+                document.getElementById('nft_block').style.display = 'block';
+                setTimeout(() => { document.getElementById('bar').style.width = '100%'; }, 100);
+            } else { document.getElementById('nft_block').style.display = 'none'; }
             show('p3');
         }
 
