@@ -1,48 +1,19 @@
-let tg = window.Telegram.WebApp;
-    tg.expand();
-    let order = { name: "", price: 0 };
-
-    function showPage(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
-
-    function calcPrice() {
-        let val = document.getElementById('custom_stars').value;
-        document.getElementById('res_price').innerText = (val * 245).toLocaleString() + " сум";
-    }
-
-    function openPay(name, price) {
-        // Добавляем рандомные копейки (100-999) для точной проверки оплаты
-        let rand = Math.floor(Math.random() * 900) + 100;
-        order = { name: name, price: price + rand };
-        document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
-        showPage('pay_page');
-    }
-
-    function copyCard() {
-        navigator.clipboard.writeText('5614682111995470');
-        tg.showAlert("Номер карты скопирован!");
-    }
-
-    function confirmPay() {
+function confirmPay() {
         let userNickname = document.getElementById('target_user').value;
         if(userNickname.length < 3) return tg.showAlert("Укажите @username получателя!");
 
-        // Отправляем данные боту: Сумма|Товар
+        // Отправляем боту: Сумма|Товар
         const dataToSend = `${order.price}|${order.name}`;
         tg.sendData(dataToSend);
 
-        // Показываем финальный экран (ВАЖНО: используем обратные кавычки ` `)
+        // Используем обратные кавычки ` ` для вставки переменных
         document.getElementById('pay_container').innerHTML = `
             <div style="text-align: center; padding: 40px 10px;">
                 <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
                 <h2 style="color: white; margin-bottom: 15px;">Заявка создана!</h2>
                 <p style="color: #8e8e93; font-size: 14px; line-height: 1.6;">
                     Товар: <b>${order.name}</b><br>
-                    Сумма к оплате: <b>${order.price.toLocaleString()} сум</b><br>
-                    Получатель: <b>${userNickname}</b><br><br>
+                    Сумма к оплате: <b>${order.price.toLocaleString()} сум</b><br><br>
                     <b>ВАЖНО:</b> Теперь закройте магазин и пришлите <b>скриншот чека</b> боту.
                 </p>
                 <button class="btn-pay" onclick="tg.close()" style="margin-top: 30px;">Закрыть магазин</button>
