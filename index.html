@@ -1,22 +1,91 @@
-function confirmPay() {
-    let userNickname = document.getElementById('target_user').value;
-    if(userNickname.length < 3) return tg.showAlert("Укажите @username получателя!");
+let tg = window.Telegram.WebApp;
+    tg.expand();
+    let order = { name: "", price: 0 };
+    let timerInterval;
 
-    // Отправляем боту: Сумма|Название (например: 19373|80 Stars)
-    const dataToSend = order.price + "|" + order.name;
-    tg.sendData(dataToSend);
+    function scrollToId(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
 
-    // Выводим подтверждение в Mini App без кода
-    document.getElementById('pay_container').innerHTML = `
-        <div style="text-align: center; padding: 40px 10px;">
-            <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
-            <h2 style="color: white; margin-bottom: 15px;">Заявка создана!</h2>
-            <p style="color: #8e8e93; font-size: 14px; line-height: 1.6;">
-                Товар: <b>${order.name}</b><br>
-                Сумма к оплате: <b>${order.price.toLocaleString()} сум</b><br><br>
-                <b>ВАЖНО:</b> Закройте магазин и пришлите <b>скриншот чека</b> боту.
-            </p>
-            <button class="btn-pay" onclick="tg.close()" style="margin-top: 30px;">Закрыть магазин</button>
-        </div>
-    `;
-}
+    function showPage(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(el) {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+        window.scrollTo(0,0);
+    }
+
+    function toggleCustom() {
+        let box = document.getElementById('custom_box');
+        box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    }
+
+    function calcPrice() {
+        let val = document.getElementById('custom_stars').value;
+        document.getElementById('res_price').innerText = (val * 245).toLocaleString() + " сум";
+    }
+
+    function payCustom() {
+        let val = document.getElementById('custom_stars').value;
+        if(val < 50) return tg.showAlert("Минимум 50 звёзд!");
+        openPay(val + " Stars", val * 245);
+    }
+
+    function openPay(name, price) {
+        let rand = Math.floor(Math.random() * 900) + 100;
+        order = { name: name, price: price + rand };
+        document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
+        startTimer(900); 
+        showPage('pay_page');
+    }
+
+    function startTimer(duration) {
+        clearInterval(timerInterval);
+        let timer = duration, minutes, seconds;
+        const display = document.getElementById('timer_display');
+        display.style.display = 'block';
+        
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            display.textContent = minutes + ":" + seconds;
+
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                tg.showAlert("Время на оплату вышло!");
+                tg.close();
+            }
+        }, 1000);
+    }
+
+    function copyCard() {
+        navigator.clipboard.writeText('5614682111995470');
+        tg.showAlert("Номер карты скопирован!");
+    }
+
+    function confirmPay() {
+        let userNickname = document.getElementById('target_user').value;
+        if(userNickname.length < 3) return tg.showAlert("Укажите @username получателя!");
+
+        // Отправляем боту: Сумма|Название
+        const dataToSend = order.price + "|" + order.name;
+        tg.sendData(dataToSend);
+
+        // ИСПОЛЬЗУЕМ ОБРАТНЫЕ КАВЫЧКИ (клавиша Ё) ДЛЯ КОРРЕКТНОЙ РАБОТЫ
+        document.getElementById('pay_container').innerHTML = `
+            <div style="text-align: center; padding: 40px 10px;">
+                <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
+                <h2 style="color: white; margin-bottom: 15px;">Заявка создана!</h2>
+                <p style="color: #8e8e93; font-size: 14px; line-height: 1.6;">
+                    Товар: <b>${order.name}</b><br>
+                    Сумма к оплате: <b>${order.price.toLocaleString()} сум</b><br><br>
+                    <b>ВАЖНО:</b> Закройте магазин и пришлите <b>скриншот чека</b> боту.
+                </p>
+                <button class="btn-pay" onclick="tg.close()" style="margin-top: 30px;">Закрыть магазин</button>
+            </div>
+        `;
+    }
