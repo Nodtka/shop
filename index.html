@@ -1,96 +1,98 @@
-let tg = window.Telegram.WebApp;
-    tg.expand();
-    let order = { name: "", price: 0 };
-    let timerInterval;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Starsbot Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; padding: 20px; }
+        .page { display: none; }
+        .active { display: block; }
+        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #334155; }
+        .btn { background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .btn-pay { background: #22c55e; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        .price { color: #facc15; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
 
-    function scrollToId(id) {
-        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    }
+    <div id="main_page" class="page active">
+        <h2>🌟 Выберите товар</h2>
+        <div class="card" onclick="openPay('50 Stars', 12250)">
+            <div>50 Telegram Stars</div>
+            <div class="price">12 250 сум</div>
+        </div>
+        <div class="card" onclick="openPay('100 Stars', 24500)">
+            <div>100 Telegram Stars</div>
+            <div class="price">24 500 сум</div>
+        </div>
+        <div class="card" onclick="openPay('250 Stars', 61250)">
+            <div>250 Telegram Stars</div>
+            <div class="price">61 250 сум</div>
+        </div>
+    </div>
 
-    function showPage(id, el) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        if(el) {
-            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
-        }
-        window.scrollTo(0,0);
-    }
-
-    function toggleCustom() {
-        let box = document.getElementById('custom_box');
-        box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-    }
-
-    function calcPrice() {
-        let val = document.getElementById('custom_stars').value;
-        document.getElementById('res_price').innerText = (val * 245).toLocaleString() + " сум";
-    }
-
-    function payCustom() {
-        let val = document.getElementById('custom_stars').value;
-        if(val < 50) return tg.showAlert("Минимум 50 звёзд!");
-        openPay(val + " Stars", val * 245);
-    }
-
-    function openPay(name, price) {
-        // Добавляем рандомные копейки (100-999) для точной идентификации платежа
-        let rand = Math.floor(Math.random() * 900) + 100;
-        order = { name: name, price: price + rand };
-        document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
-        startTimer(900); 
-        showPage('pay_page');
-    }
-
-    function startTimer(duration) {
-        clearInterval(timerInterval);
-        let timer = duration, minutes, seconds;
-        const display = document.getElementById('timer_display');
-        display.style.display = 'block';
-        
-        timerInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
-            display.textContent = minutes + ":" + seconds;
-
-            if (--timer < 0) {
-                clearInterval(timerInterval);
-                tg.showAlert("Время на оплату вышло!");
-                tg.close();
-            }
-        }, 1000);
-    }
-
-    function copyCard() {
-        navigator.clipboard.writeText('5614682111995470');
-        tg.showAlert("Номер карты скопирован!");
-    }
-
-    function confirmPay() {
-        let userNickname = document.getElementById('target_user').value;
-        if(userNickname.length < 3) return tg.showAlert("Укажите @username получателя!");
-
-        // Формируем данные: сумма|товар (эту строку мы используем в боте для разделения)
-        const dataToSend = order.price + "|" + order.name;
-        
-        // Отправляем данные боту (это активирует заявку в Python)
-        tg.sendData(dataToSend);
-
-        // --- ИСПРАВЛЕННЫЙ БЛОК (С ОБРАТНЫМИ КАВЫЧКАМИ `) ---
-        // Теперь вместо кода пользователь увидит реальные данные (например, "100 Stars")
-        document.getElementById('pay_container').innerHTML = `
-            <div style="text-align: center; padding: 40px 10px; animation: fadeIn 0.4s ease;">
-                <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
-                <h2 style="color: white; margin-bottom: 15px;">Заявка принята!</h2>
-                <p style="color: #8e8e93; font-size: 14px; line-height: 1.6;">
-                    Товар: <b>${order.name}</b><br>
-                    Сумма: <b>${order.price.toLocaleString()} сум</b><br>
-                    Получатель: <b>${userNickname}</b><br><br>
-                    <b>ВАЖНО:</b> Теперь закройте магазин и пришлите <b>скриншот чека</b> боту.
-                </p>
-                <button class="btn-pay" onclick="tg.close()" style="margin-top: 30px;">Закрыть магазин</button>
+    <div id="pay_page" class="page">
+        <div id="pay_container">
+            <h2>Оплата заказа</h2>
+            <div class="card">
+                <p>К оплате: <span id="final_price" class="price"></span></p>
+                <p>Карта: <code>5614682111995470</code></p>
+                <button class="btn" onclick="copyCard()">Копировать карту</button>
             </div>
-        `;
-    }
+            <div class="card">
+                <p>Введите ваш @username (получатель):</p>
+                <input type="text" id="target_user" placeholder="@nickname">
+                <button class="btn btn-pay" onclick="confirmPay()">Я оплатил(а)</button>
+            </div>
+            <button class="btn" style="background:#475569" onclick="showPage('main_page')">Назад</button>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let order = { name: "", price: 0 };
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function openPay(name, price) {
+            let rand = Math.floor(Math.random() * 900) + 100;
+            order = { name: name, price: price + rand };
+            document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
+            showPage('pay_page');
+        }
+
+        function copyCard() {
+            navigator.clipboard.writeText('5614682111995470');
+            tg.showAlert("Номер карты скопирован!");
+        }
+
+        function confirmPay() {
+            let userNickname = document.getElementById('target_user').value;
+            if(userNickname.length < 3) return tg.showAlert("Укажите @username!");
+
+            // Отправляем: Сумма|Товар
+            const dataToSend = order.price + "|" + order.name;
+            tg.sendData(dataToSend);
+
+            // ИСПОЛЬЗУЕМ ОБРАТНЫЕ КАВЫЧКИ ` ДЛЯ ПОДСТАНОВКИ ДАННЫХ
+            document.getElementById('pay_container').innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 60px;">✅</div>
+                    <h2>Заявка создана!</h2>
+                    <p>Товар: <b>${order.name}</b></p>
+                    <p>Сумма: <b>${order.price.toLocaleString()} сум</b></p>
+                    <p style="color: #facc15;"><b>ВАЖНО:</b> Закройте магазин и пришлите <b>скриншот чека</b> боту.</p>
+                    <button class="btn" onclick="tg.close()">Закрыть магазин</button>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
