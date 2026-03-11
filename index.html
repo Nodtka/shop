@@ -3,62 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Starsbot Shop</title>
+    <title>Starsbot Luxury</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: sans-serif; background: #000; color: #fff; margin: 0; padding: 15px; }
-        .card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; }
-        .price { color: #facc15; font-weight: bold; font-size: 18px; }
-        .btn { background: #3b82f6; color: #fff; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #3b82f6; background: #000; color: #fff; box-sizing: border-box; margin-bottom: 15px; }
-        .support-btn { background: #222; border: 1px solid #444; margin-top: 20px; }
-        .page { display: none; } .active { display: block; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: #111; padding: 5px; border-radius: 12px; }
+        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; color: #555; font-weight: bold; }
+        .tab.active { background: #3b82f6; color: #fff; }
+        .card { background: #111; padding: 15px; border-radius: 14px; margin-bottom: 10px; border: 1px solid #222; display: flex; justify-content: space-between; align-items: center; }
+        .price { color: #facc15; font-weight: bold; }
+        .btn { background: #3b82f6; color: #fff; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #3b82f6; background: #000; color: #fff; box-sizing: border-box; margin-bottom: 10px; }
+        .page { display: none; } .active-page { display: block; }
+        .history-item { font-size: 13px; color: #aaa; border-bottom: 1px solid #222; padding: 8px 0; }
     </style>
 </head>
 <body>
-    <div id="shop_page" class="page active">
-        <h3>🚀 Выберите количество Stars:</h3>
-        <div class="card" onclick="selectItem('50 Stars', 12500)"><div>50 Stars</div><div class="price">12 500 сум</div></div>
-        <div class="card" onclick="selectItem('100 Stars', 25000)"><div>100 Stars</div><div class="price">25 000 сум</div></div>
-        <div class="card" onclick="selectItem('250 Stars', 62500)"><div>250 Stars</div><div class="price">62 500 сум</div></div>
-        <div class="card" onclick="selectItem('500 Stars', 125000)"><div>500 Stars</div><div class="price">125 000 сум</div></div>
-        <div class="card" onclick="selectItem('1000 Stars', 250000)"><div>1000 Stars</div><div class="price">250 000 сум</div></div>
+    <div id="main_page" class="page active-page">
+        <div class="tabs">
+            <div id="t_stars" class="tab active" onclick="switchTab('stars')">Stars</div>
+            <div id="t_prem" class="tab" onclick="switchTab('premium')">Premium</div>
+            <div id="t_hist" class="tab" onclick="switchTab('history')">История</div>
+        </div>
         
-        <button class="btn support-btn" onclick="window.open('https://t.me/wvwlvl')">👨‍💻 ПОДДЕРЖКА</button>
+        <div id="stars_sec">
+            <div class="card" onclick="openPay('50 Stars', 12500)"><span>50 Stars</span><span class="price">12 500 сум</span></div>
+            <div class="card" onclick="openPay('100 Stars', 25000)"><span>100 Stars</span><span class="price">25 000 сум</span></div>
+            <div class="card" onclick="openPay('250 Stars', 62500)"><span>250 Stars</span><span class="price">62 500 сум</span></div>
+            <div class="card" onclick="openPay('500 Stars', 125000)"><span>500 Stars</span><span class="price">125 000 сум</span></div>
+        </div>
+
+        <div id="prem_sec" style="display:none">
+            <div class="card" onclick="openPay('Premium 1 мес', 50000)"><span>1 месяц</span><span class="price">50 000 сум</span></div>
+            <div class="card" onclick="openPay('Premium 3 мес', 180000)"><span>3 месяца</span><span class="price">180 000 сум</span></div>
+            <div class="card" onclick="openPay('Premium 6 мес', 230000)"><span>6 месяцев</span><span class="price">230 000 сум</span></div>
+            <div class="card" onclick="openPay('Premium 1 год', 400000)"><span>12 месяцев</span><span class="price">400 000 сум</span></div>
+        </div>
+
+        <div id="hist_sec" style="display:none">
+            <div id="history_list">Загрузка истории...</div>
+        </div>
+        <button class="btn" style="background:#222; margin-top:20px;" onclick="window.open('https://t.me/wvwlvl')">👨‍💻 ПОДДЕРЖКА</button>
     </div>
 
     <div id="pay_page" class="page">
-        <h2 style="text-align:center">Оформление</h2>
-        <p>Введите @username получателя:</p>
-        <input type="text" id="target_user" placeholder="@username">
-        
-        <div style="background:#111; padding:15px; border-radius:10px; text-align:center">
-            <p>Переведите на карту:</p>
+        <h3 style="text-align:center">Оформление</h3>
+        <input type="text" id="target_user" placeholder="@username получателя">
+        <div style="background:#111; padding:15px; border-radius:12px; text-align:center; border: 1px solid #3b82f6;">
+            <p style="color:#888; margin:0">Карта для оплаты:</p>
             <code style="font-size:18px">5614682111995470</code>
-            <p id="order_desc" style="margin-top:15px; color:#facc15"></p>
+            <p id="order_desc" style="color:#facc15; margin-top:10px"></p>
         </div>
-        
-        <button class="btn" onclick="confirmPay()">Я ОПЛАТИЛ(А)</button>
-        <button class="btn support-btn" onclick="location.reload()">Назад</button>
+        <button class="btn" onclick="confirmOrder()">Я ОПЛАТИЛ(А)</button>
+        <button class="btn" style="background:none" onclick="location.reload()">Назад</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp; tg.expand();
-        let currentItem = {};
+        let currentOrder = {};
 
-        function selectItem(name, price) {
-            let rand = Math.floor(Math.random() * 500) + 100; // Для идентификации платежа
-            currentItem = { name: name, price: price + rand };
-            document.getElementById('order_desc').innerHTML = `${name}<br>Сумма: <b>${currentItem.price} сум</b>`;
-            document.getElementById('shop_page').classList.remove('active');
-            document.getElementById('pay_page').classList.add('active');
+        function switchTab(t) {
+            document.getElementById('stars_sec').style.display = t === 'stars' ? 'block' : 'none';
+            document.getElementById('prem_sec').style.display = t === 'premium' ? 'block' : 'none';
+            document.getElementById('hist_sec').style.display = t === 'history' ? 'block' : 'none';
+            document.getElementById('t_stars').className = 'tab' + (t === 'stars' ? ' active' : '');
+            document.getElementById('t_prem').className = 'tab' + (t === 'premium' ? ' active' : '');
+            document.getElementById('t_hist').className = 'tab' + (t === 'history' ? ' active' : '');
         }
 
-        function confirmPay() {
+        function openPay(n, p) {
+            let r = Math.floor(Math.random() * 900) + 100;
+            currentOrder = { name: n, price: p + r };
+            document.getElementById('order_desc').innerHTML = `${n}<br>Сумма: <b>${currentOrder.price} сум</b>`;
+            document.getElementById('main_page').classList.remove('active-page');
+            document.getElementById('pay_page').classList.add('active-page');
+        }
+
+        function confirmOrder() {
             let nick = document.getElementById('target_user').value;
-            if (nick.length < 3) return tg.showAlert("Введите ник!");
-            // Отправляем: Цена|Товар|Ник
-            tg.sendData(`${currentItem.price}|${currentItem.name}|${nick}`);
+            if(nick.length < 3) return tg.showAlert("Введите ник!");
+            tg.sendData(`${currentOrder.price}|${currentOrder.name}|${nick}`);
             tg.close();
         }
     </script>
