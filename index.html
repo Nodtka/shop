@@ -6,31 +6,63 @@
     <title>Starsbot Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; padding: 20px; }
+        body { font-family: sans-serif; background: #0f172a; color: white; margin: 0; padding: 20px; -webkit-user-select: none; }
         .page { display: none; }
         .active { display: block; }
         .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #334155; }
         .btn { background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-pay { background: #22c55e; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         .price { color: #facc15; font-size: 18px; font-weight: bold; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; margin-top: 10px; }
+        .tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab { flex: 1; text-align: center; padding: 10px; background: #1e293b; border-radius: 8px; cursor: pointer; border: 1px solid #334155; }
+        .tab.active { background: #3b82f6; border-color: #3b82f6; }
     </style>
 </head>
 <body>
 
     <div id="main_page" class="page active">
-        <h2>🌟 Выберите товар</h2>
-        <div class="card" onclick="openPay('50 Stars', 12250)">
-            <div>50 Telegram Stars</div>
-            <div class="price">12 250 сум</div>
+        <div class="tab-container">
+            <div class="tab active" onclick="showTab('stars')">Stars</div>
+            <div class="tab" onclick="showTab('premium')">Premium</div>
         </div>
-        <div class="card" onclick="openPay('100 Stars', 24500)">
-            <div>100 Telegram Stars</div>
-            <div class="price">24 500 сум</div>
+
+        <div id="stars_list">
+            <div class="card" onclick="openPay('50 Stars', 12250)">
+                <div>50 Telegram Stars</div>
+                <div class="price">12 250 сум</div>
+            </div>
+            <div class="card" onclick="openPay('100 Stars', 24500)">
+                <div>100 Telegram Stars</div>
+                <div class="price">24 500 сум</div>
+            </div>
+            <div class="card" onclick="openPay('250 Stars', 61250)">
+                <div>250 Telegram Stars</div>
+                <div class="price">61 250 сум</div>
+            </div>
+            <div class="card" style="border-style: dashed;" onclick="document.getElementById('custom_box').style.display='block'">
+                <div>Своё количество звёзд</div>
+            </div>
+            <div id="custom_box" style="display:none; margin-top:10px;">
+                <input type="number" id="custom_stars" placeholder="Минимум 50" oninput="calcPrice()">
+                <p id="res_price" class="price" style="margin: 10px 0;">0 сум</p>
+                <button class="btn" onclick="payCustom()">Купить своё количество</button>
+            </div>
         </div>
-        <div class="card" onclick="openPay('250 Stars', 61250)">
-            <div>250 Telegram Stars</div>
-            <div class="price">61 250 сум</div>
+
+        <div id="premium_list" style="display:none;">
+            <div class="card" onclick="openPay('Premium 3 месяца', 155000)">
+                <div>Premium на 3 месяца</div>
+                <div class="price">155 000 сум</div>
+            </div>
+            <div class="card" onclick="openPay('Premium 6 месяцев', 245000)">
+                <div>Premium на 6 месяцев</div>
+                <div class="price">245 000 сум</div>
+            </div>
+            <div class="card" onclick="openPay('Premium 1 год', 450000)">
+                <div>Premium на 1 год</div>
+                <div class="price">450 000 сум</div>
+            </div>
         </div>
     </div>
 
@@ -43,11 +75,11 @@
                 <button class="btn" onclick="copyCard()">Копировать карту</button>
             </div>
             <div class="card">
-                <p>Введите ваш @username (получатель):</p>
+                <p>Введите ваш @username получателя:</p>
                 <input type="text" id="target_user" placeholder="@nickname">
                 <button class="btn btn-pay" onclick="confirmPay()">Я оплатил(а)</button>
             </div>
-            <button class="btn" style="background:#475569" onclick="showPage('main_page')">Назад</button>
+            <button class="btn" style="background:#475569" onclick="location.reload()">Назад</button>
         </div>
     </div>
 
@@ -56,16 +88,30 @@
         tg.expand();
         let order = { name: "", price: 0 };
 
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        function showTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('stars_list').style.display = type === 'stars' ? 'block' : 'none';
+            document.getElementById('premium_list').style.display = type === 'premium' ? 'block' : 'none';
+        }
+
+        function calcPrice() {
+            let val = document.getElementById('custom_stars').value;
+            document.getElementById('res_price').innerText = (val * 245).toLocaleString() + " сум";
+        }
+
+        function payCustom() {
+            let val = document.getElementById('custom_stars').value;
+            if(val < 50) return tg.showAlert("Минимум 50 звёзд!");
+            openPay(val + " Stars", val * 245);
         }
 
         function openPay(name, price) {
             let rand = Math.floor(Math.random() * 900) + 100;
             order = { name: name, price: price + rand };
             document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
-            showPage('pay_page');
+            document.getElementById('main_page').classList.remove('active');
+            document.getElementById('pay_page').classList.add('active');
         }
 
         function copyCard() {
@@ -77,18 +123,17 @@
             let userNickname = document.getElementById('target_user').value;
             if(userNickname.length < 3) return tg.showAlert("Укажите @username!");
 
-            // Отправляем: Сумма|Товар
             const dataToSend = order.price + "|" + order.name;
             tg.sendData(dataToSend);
 
-            // ИСПОЛЬЗУЕМ ОБРАТНЫЕ КАВЫЧКИ ` ДЛЯ ПОДСТАНОВКИ ДАННЫХ
+            // ИСПОЛЬЗУЕМ ОБРАТНЫЕ КАВЫЧКИ ` ДЛЯ ПОДСТАНОВКИ (Клавиша Ё)
             document.getElementById('pay_container').innerHTML = `
                 <div style="text-align: center; padding: 20px;">
                     <div style="font-size: 60px;">✅</div>
-                    <h2>Заявка создана!</h2>
+                    <h2 style="color:white;">Заявка создана!</h2>
                     <p>Товар: <b>${order.name}</b></p>
                     <p>Сумма: <b>${order.price.toLocaleString()} сум</b></p>
-                    <p style="color: #facc15;"><b>ВАЖНО:</b> Закройте магазин и пришлите <b>скриншот чека</b> боту.</p>
+                    <p style="color: #facc15;"><b>ВАЖНО:</b> Теперь закройте магазин и пришлите <b>скриншот чека</b> боту для проверки.</p>
                     <button class="btn" onclick="tg.close()">Закрыть магазин</button>
                 </div>
             `;
