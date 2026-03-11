@@ -1,9 +1,8 @@
 let tg = window.Telegram.WebApp;
     tg.expand();
     let order = { name: "", price: 0 };
-    let timerInterval;
 
-    function showPage(id, el) {
+    function showPage(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(id).classList.add('active');
         window.scrollTo(0,0);
@@ -15,7 +14,7 @@ let tg = window.Telegram.WebApp;
     }
 
     function openPay(name, price) {
-        // Добавляем рандомные копейки для точной идентификации платежа
+        // Добавляем рандомные копейки (100-999) для точной проверки оплаты
         let rand = Math.floor(Math.random() * 900) + 100;
         order = { name: name, price: price + rand };
         document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
@@ -35,14 +34,15 @@ let tg = window.Telegram.WebApp;
         const dataToSend = `${order.price}|${order.name}`;
         tg.sendData(dataToSend);
 
-        // Финальный экран подтверждения (ИСПРАВЛЕНО)
+        // Показываем финальный экран (ВАЖНО: используем обратные кавычки ` `)
         document.getElementById('pay_container').innerHTML = `
             <div style="text-align: center; padding: 40px 10px;">
                 <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
                 <h2 style="color: white; margin-bottom: 15px;">Заявка создана!</h2>
                 <p style="color: #8e8e93; font-size: 14px; line-height: 1.6;">
                     Товар: <b>${order.name}</b><br>
-                    Сумма: <b>${order.price.toLocaleString()} сум</b><br><br>
+                    Сумма к оплате: <b>${order.price.toLocaleString()} сум</b><br>
+                    Получатель: <b>${userNickname}</b><br><br>
                     <b>ВАЖНО:</b> Теперь закройте магазин и пришлите <b>скриншот чека</b> боту.
                 </p>
                 <button class="btn-pay" onclick="tg.close()" style="margin-top: 30px;">Закрыть магазин</button>
