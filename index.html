@@ -1,138 +1,4 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Starsbot Shop</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root { --bg: #0b0e11; --card: #15191d; --blue: #37aee2; --text: #ffffff; --gray: #707579; --accent: #febd2f; }
-        body { font-family: -apple-system, blinkmacsystemfont, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 100px; scroll-behavior: smooth; }
-        .container { padding: 16px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Стиль профиля */
-        .profile-card { background: #1c2228; border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid #242f3d; }
-        .progress-bar { height: 6px; background: #242f3d; border-radius: 10px; margin: 12px 0; overflow: hidden; }
-        .progress-fill { width: 15%; height: 100%; background: var(--accent); box-shadow: 0 0 10px rgba(254, 189, 47, 0.5); }
-
-        /* Навигация */
-        .nav-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
-        .nav-btn { background: linear-gradient(135deg, #242f3d, #15191d); border: 1px solid #37aee2; border-radius: 15px; padding: 15px; text-align: center; color: white; font-weight: bold; cursor: pointer; }
-
-        .section-header { font-size: 13px; font-weight: 800; color: var(--gray); text-transform: uppercase; margin: 35px 0 15px 5px; letter-spacing: 0.5px; border-left: 3px solid var(--blue); padding-left: 10px; }
-        
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: var(--card); border-radius: 18px; padding: 22px 10px; text-align: center; border: 1px solid #242f3d; position: relative; transition: 0.2s; }
-        .card:active { transform: scale(0.96); background: #1c2228; }
-        .card.popular::after { content: "TOP"; position: absolute; top: 0; right: 0; background: var(--blue); color: #fff; font-size: 9px; font-weight: 900; padding: 3px 10px; border-radius: 0 15px 0 12px; }
-        
-        .card b { display: block; font-size: 20px; margin-bottom: 6px; color: #fff; }
-        .card span { font-size: 13px; color: var(--blue); font-weight: 700; }
-
-        .custom-input-group { background: var(--card); border-radius: 18px; padding: 15px; border: 1px solid #242f3d; margin-top: 12px; display: none; }
-        input { width: 100%; background: #242f3d; border: 1px solid #2b3745; border-radius: 12px; color: #fff; padding: 14px; font-size: 16px; box-sizing: border-box; outline: none; }
-        
-        .btn-pay { background: var(--blue); color: #fff; border: none; border-radius: 16px; padding: 18px; width: 100%; font-size: 16px; font-weight: 700; margin-top: 15px; }
-
-        .tabs { position: fixed; bottom: 0; width: 100%; background: #17212b; display: flex; padding: 10px 0; border-top: 1px solid #242f3d; padding-bottom: calc(10px + var(--tg-viewport-bottom-offset, 0px)); z-index: 1000; }
-        .tab-item { flex: 1; text-align: center; color: var(--gray); font-size: 11px; font-weight: 600; cursor: pointer; }
-        .tab-item.active { color: var(--blue); }
-        .tab-icon { font-size: 20px; display: block; margin-bottom: 4px; }
-
-        .page { display: none; } .page.active { display: block; }
-        
-        /* Стиль таймера */
-        #timer_display { font-size: 24px; font-weight: 900; color: #ff4d4d; margin: 10px 0; display: none; }
-    </style>
-</head>
-<body>
-
-<div id="shop_page" class="page active">
-    <div class="container">
-        <div class="profile-card">
-            <div style="display:flex; justify-content:space-between; font-size:13px; font-weight:bold;">
-                <span style="color:var(--accent);">🎁 Прогресс NFT (Бонус)</span>
-                <span style="color:var(--accent);">15%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill"></div></div>
-            <div style="font-size: 10px; color: var(--gray);">Накопите 1 200 000 сум для получения NFT</div>
-        </div>
-
-        <div class="nav-menu">
-            <div class="nav-btn" onclick="scrollToId('stars_section')">⭐ Stars</div>
-            <div class="nav-btn" onclick="scrollToId('premium_section')">💎 Premium</div>
-        </div>
-
-        <div id="stars_section" class="section-header">Telegram Stars ⭐</div>
-        <div class="grid">
-            <div class="card" onclick="openPay('50 Stars', 12500)"><b>⭐ 50</b><span>12 500 сум</span></div>
-            <div class="card" onclick="openPay('100 Stars', 24500)"><b>⭐ 100</b><span>24 500 сум</span></div>
-            <div class="card popular" onclick="openPay('250 Stars', 61000)"><b>⭐ 250</b><span>61 000 сум</span></div>
-            <div class="card" onclick="openPay('500 Stars', 122000)"><b>⭐ 500</b><span>122 000 сум</span></div>
-        </div>
-        
-        <div class="card" style="margin-top:12px; width:100%;" onclick="toggleCustom()">
-            <b>⚙️ Указать другую сумму</b>
-            <span>Минимум 50 ⭐</span>
-        </div>
-
-        <div id="custom_box" class="custom-input-group">
-            <input type="number" id="custom_stars" placeholder="Количество звёзд" oninput="calcPrice()">
-            <div id="res_price" style="margin-top:10px; color:var(--blue); font-weight:bold; text-align:center;">0 сум</div>
-            <button class="btn-pay" style="padding:12px;" onclick="payCustom()">Продолжить</button>
-        </div>
-
-        <div id="premium_section" class="section-header">Telegram Premium 💎</div>
-        <div class="grid">
-            <div class="card" onclick="openPay('Premium 1 мес', 50000)"><b>💎 1 мес</b><span>50 000 сум</span></div>
-            <div class="card" onclick="openPay('Premium 3 мес', 180000)"><b>💎 3 мес</b><span>180 000 сум</span></div>
-            <div class="card" onclick="openPay('Premium 6 мес', 230000)"><b>💎 6 мес</b><span>230 000 сум</span></div>
-            <div class="card popular" onclick="openPay('Premium 1 год', 400000)"><b>💎 1 год</b><span>400 000 сум</span></div>
-        </div>
-    </div>
-</div>
-
-<div id="history_page" class="page">
-    <div class="container" style="text-align: center; margin-top: 50px;">
-        <span style="font-size: 50px;">📜</span>
-        <h3>История покупок</h3>
-        <p style="color: var(--gray);">Здесь будет список ваших заказов.</p>
-    </div>
-</div>
-
-<div id="pay_page" class="page">
-    <div class="container" id="pay_container">
-        <div class="section-header">Оформление</div>
-        <div id="timer_display">15:00</div>
-        <input type="text" id="target_user" placeholder="@username получателя">
-        <div id="final_price" style="font-size: 32px; font-weight: 900; text-align: center; margin: 25px 0; color: var(--accent);">0 сум</div>
-        
-        <div class="card" style="text-align: left; padding: 20px;">
-            <span style="font-size: 11px; color: var(--gray);">КАРТА (UZCARD)</span>
-            <div style="font-size: 18px; letter-spacing: 1px; margin: 8px 0; font-weight:bold;">5614 6821 1199 5470</div>
-            <button style="color: var(--blue); background: none; border: none; padding: 0; font-weight: bold;" onclick="copyCard()">Копировать номер</button>
-        </div>
-
-        <button class="btn-pay" onclick="confirmPay()">✅ Я ОПЛАТИЛ</button>
-        <button id="back_btn" style="width:100%; background:none; border:none; color:var(--gray); margin-top:20px;" onclick="showPage('shop_page')">◀ Назад</button>
-    </div>
-</div>
-
-<div class="tabs">
-    <div class="tab-item active" onclick="showPage('shop_page', this)">
-        <span class="tab-icon">🛒</span>Магазин
-    </div>
-    <div class="tab-item" onclick="showPage('history_page', this)">
-        <span class="tab-icon">📜</span>История
-    </div>
-    <div class="tab-item" onclick="window.open('https://t.me/wvwlvl', '_blank')">
-        <span class="tab-icon">👨‍💻</span>Поддержка
-    </div>
-</div>
-
-<script>
-    let tg = window.Telegram.WebApp;
+let tg = window.Telegram.WebApp;
     tg.expand();
     let order = { name: "", price: 0 };
     let timerInterval;
@@ -168,12 +34,9 @@
     }
 
     function openPay(name, price) {
-        // Добавляем рандомные копейки (100-999) для идентификации платежа
         let rand = Math.floor(Math.random() * 900) + 100;
         order = { name: name, price: price + rand };
         document.getElementById('final_price').innerText = order.price.toLocaleString() + " сум";
-        
-        // Запуск таймера
         startTimer(900); 
         showPage('pay_page');
     }
@@ -205,25 +68,23 @@
     }
 
     function confirmPay() {
-        let user = document.getElementById('target_user').value;
-        if(user.length < 3) return tg.showAlert("Укажите @username получателя!");
+        let userNickname = document.getElementById('target_user').value;
+        if(userNickname.length < 3) return tg.showAlert("Укажите @username получателя!");
 
-        // Отправляем точную сумму (с копейками) боту
-        tg.sendData(`${order.price}`);
+        // Отправляем данные в формате: сумма|название товара
+        const dataToSend = order.price + "|" + order.name;
+        tg.sendData(dataToSend);
 
         document.getElementById('pay_container').innerHTML = `
             <div style="text-align: center; padding: 40px 10px; animation: fadeIn 0.4s ease;">
                 <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
-                <h2 style="color: white; margin-bottom: 15px;">Заявка принята!</h2>
-                <p style="color: var(--gray); font-size: 14px; line-height: 1.6;">
-                    Сумма к оплате: <b>${order.price.toLocaleString()} сум</b><br>
-                    Получатель: <b>${user}</b><br><br>
-                    <b>ВАЖНО:</b> Пожалуйста, <b>пришлите скриншот чека</b> боту прямо сейчас для подтверждения.
+                <h2 style="color: white; margin-bottom: 15px;">Заявка создана!</h2>
+                <p style="color: #8e8e93; font-size: 14px; line-height: 1.6;">
+                    Товар: <b>${order.name}</b><br>
+                    Сумма: <b>${order.price.toLocaleString()} сум</b><br><br>
+                    <b>ВАЖНО:</b> Теперь пришлите <b>скриншот чека</b> боту.
                 </p>
                 <button class="btn-pay" onclick="tg.close()" style="margin-top: 30px;">Закрыть магазин</button>
             </div>
         `;
     }
-</script>
-</body>
-</html>
