@@ -3,116 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Starsbot Luxury Shop</title>
+    <title>Starsbot Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Полностью черный стильный фон */
-        body { font-family: 'Inter', sans-serif; background: #000000; color: #ffffff; margin: 0; padding: 15px; }
-        .tabs { display: flex; gap: 8px; margin-bottom: 20px; background: #111; padding: 5px; border-radius: 12px; }
-        .tab { flex: 1; text-align: center; padding: 12px; border-radius: 10px; cursor: pointer; color: #666; font-weight: bold; transition: 0.3s; }
-        .tab.active { background: #3b82f6; color: #fff; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-        
-        .card { background: #111; padding: 20px; border-radius: 16px; margin-bottom: 12px; border: 1px solid #222; transition: 0.2s; }
-        .card:active { transform: scale(0.98); border-color: #3b82f6; }
-        .card-title { font-size: 16px; font-weight: 500; color: #aaa; }
-        .price { color: #facc15; font-size: 20px; font-weight: 800; margin-top: 5px; }
-        
-        .btn { background: #3b82f6; color: white; border: none; padding: 18px; border-radius: 14px; width: 100%; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        .btn-copy { background: #222; border: 1px dashed #3b82f6; color: #3b82f6; margin-bottom: 15px; }
-        
-        .page { display: none; } .active-page { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .payment-info { background: #0a0a0a; padding: 20px; border-radius: 20px; border: 1px solid #3b82f6; text-align: center; }
-        .check-icon { font-size: 50px; color: #22c55e; margin-bottom: 10px; }
-        code { font-size: 20px; color: #fff; letter-spacing: 1px; display: block; margin: 10px 0; }
+        body { font-family: sans-serif; background: #000; color: #fff; margin: 0; padding: 15px; }
+        .card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; }
+        .price { color: #facc15; font-weight: bold; font-size: 18px; }
+        .btn { background: #3b82f6; color: #fff; border: none; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #3b82f6; background: #000; color: #fff; box-sizing: border-box; margin-bottom: 15px; }
+        .support-btn { background: #222; border: 1px solid #444; margin-top: 20px; }
+        .page { display: none; } .active { display: block; }
     </style>
 </head>
 <body>
-    <div id="main_page" class="page active-page">
-        <div class="tabs">
-            <div id="t_stars" class="tab active" onclick="switchTab('stars')">Stars</div>
-            <div id="t_prem" class="tab" onclick="switchTab('premium')">Premium</div>
-        </div>
+    <div id="shop_page" class="page active">
+        <h3>🚀 Выберите количество Stars:</h3>
+        <div class="card" onclick="selectItem('50 Stars', 12500)"><div>50 Stars</div><div class="price">12 500 сум</div></div>
+        <div class="card" onclick="selectItem('100 Stars', 25000)"><div>100 Stars</div><div class="price">25 000 сум</div></div>
+        <div class="card" onclick="selectItem('250 Stars', 62500)"><div>250 Stars</div><div class="price">62 500 сум</div></div>
+        <div class="card" onclick="selectItem('500 Stars', 125000)"><div>500 Stars</div><div class="price">125 000 сум</div></div>
+        <div class="card" onclick="selectItem('1000 Stars', 250000)"><div>1000 Stars</div><div class="price">250 000 сум</div></div>
         
-        <div id="stars_sec">
-            <div class="card" onclick="openPay('50 Telegram Stars', 12500)">
-                <div class="card-title">50 Telegram Stars</div>
-                <div class="price">12 500 сум</div>
-            </div>
-            <div class="card" onclick="openPay('100 Telegram Stars', 25000)">
-                <div class="card-title">100 Telegram Stars</div>
-                <div class="price">25 000 сум</div>
-            </div>
-            <div class="card" onclick="openPay('250 Telegram Stars', 62500)">
-                <div class="card-title">250 Telegram Stars</div>
-                <div class="price">62 500 сум</div>
-            </div>
-        </div>
-
-        <div id="prem_sec" style="display:none">
-            <div class="card" onclick="openPay('Premium 3 месяца', 180000)">
-                <div class="card-title">Premium на 3 месяца</div>
-                <div class="price">180 000 сум</div>
-            </div>
-            <div class="card" onclick="openPay('Premium 6 месяцев', 230000)">
-                <div class="card-title">Premium на 6 месяцев</div>
-                <div class="price">230 000 сум</div>
-            </div>
-            <div class="card" onclick="openPay('Premium 1 год', 400000)">
-                <div class="card-title">Premium на 1 год</div>
-                <div class="price">400 000 сум</div>
-            </div>
-        </div>
+        <button class="btn support-btn" onclick="window.open('https://t.me/wvwlvl')">👨‍💻 ПОДДЕРЖКА</button>
     </div>
 
     <div id="pay_page" class="page">
-        <div class="payment-info">
-            <div class="check-icon">✔️</div>
-            <h2 style="margin: 0 0 10px 0;">Заявка создана!</h2>
-            <p style="color: #666; font-size: 14px;">Переведите сумму на карту:</p>
-            <code>5614682111995470</code>
-            <button class="btn btn-copy" onclick="copyCard()">Копировать карту</button>
-            
-            <p style="color: #aaa; margin-top: 20px;">
-                Товар: <span id="p_name" style="color: #fff;"></span><br>
-                К оплате: <span id="p_price" style="color: #facc15; font-weight: bold;"></span>
-            </p>
-            <p style="color: #facc15; font-size: 13px; margin-top: 15px;">
-                <b>ВАЖНО:</b> После оплаты закройте магазин и пришлите скриншот чека боту!
-            </p>
-            <button class="btn" onclick="sendToBot()">Закрыть и прислать чек</button>
+        <h2 style="text-align:center">Оформление</h2>
+        <p>Введите @username получателя:</p>
+        <input type="text" id="target_user" placeholder="@username">
+        
+        <div style="background:#111; padding:15px; border-radius:10px; text-align:center">
+            <p>Переведите на карту:</p>
+            <code style="font-size:18px">5614682111995470</code>
+            <p id="order_desc" style="margin-top:15px; color:#facc15"></p>
         </div>
+        
+        <button class="btn" onclick="confirmPay()">Я ОПЛАТИЛ(А)</button>
+        <button class="btn support-btn" onclick="location.reload()">Назад</button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp; tg.expand(); 
-        tg.backgroundColor = "#000000"; tg.headerColor = "#000000";
-        let order = { name: "", price: 0 };
+        let tg = window.Telegram.WebApp; tg.expand();
+        let currentItem = {};
 
-        function switchTab(t) {
-            document.getElementById('stars_sec').style.display = t === 'stars' ? 'block' : 'none';
-            document.getElementById('prem_sec').style.display = t === 'premium' ? 'block' : 'none';
-            document.getElementById('t_stars').classList.toggle('active', t === 'stars');
-            document.getElementById('t_prem').classList.toggle('active', t === 'premium');
+        function selectItem(name, price) {
+            let rand = Math.floor(Math.random() * 500) + 100; // Для идентификации платежа
+            currentItem = { name: name, price: price + rand };
+            document.getElementById('order_desc').innerHTML = `${name}<br>Сумма: <b>${currentItem.price} сум</b>`;
+            document.getElementById('shop_page').classList.remove('active');
+            document.getElementById('pay_page').classList.add('active');
         }
 
-        function openPay(n, p) {
-            let r = Math.floor(Math.random() * 900) + 100;
-            order = { name: n, price: p + r };
-            document.getElementById('p_name').innerText = order.name;
-            document.getElementById('p_price').innerText = order.price.toLocaleString() + " сум";
-            document.getElementById('main_page').classList.remove('active-page');
-            document.getElementById('pay_page').classList.add('active-page');
-        }
-
-        function copyCard() {
-            navigator.clipboard.writeText('5614682111995470');
-            tg.showAlert("Номер карты скопирован!");
-        }
-
-        function sendToBot() {
-            tg.sendData(order.price + "|" + order.name);
+        function confirmPay() {
+            let nick = document.getElementById('target_user').value;
+            if (nick.length < 3) return tg.showAlert("Введите ник!");
+            // Отправляем: Цена|Товар|Ник
+            tg.sendData(`${currentItem.price}|${currentItem.name}|${nick}`);
             tg.close();
         }
     </script>
