@@ -16,7 +16,6 @@
         .input-group { position: relative; z-index: 10; margin-bottom: 20px; }
         input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #3b82f6; background: #111; color: #fff; box-sizing: border-box; font-size: 16px; outline: none; }
         .page { display: none; } .active-page { display: block; }
-        .gift-info { background: rgba(59, 130, 246, 0.1); border: 1px dashed #3b82f6; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-size: 14px; color: #3b82f6; }
     </style>
 </head>
 <body>
@@ -24,7 +23,6 @@
         <div class="tabs">
             <div id="t_s" class="tab active" onclick="tab('s')">Stars</div>
             <div id="t_p" class="tab" onclick="tab('p')">Premium</div>
-            <div id="t_n" class="tab" onclick="tab('n')">NFT</div>
         </div>
         
         <div id="s_sec">
@@ -39,13 +37,8 @@
             <div class="card" onclick="step2('Premium 6 мес', 230000)"><span>6 месяцев</span><span class="price">230 000</span></div>
             <div class="card" onclick="step2('Premium 12 мес', 400000)"><span>12 месяцев</span><span class="price">400 000</span></div>
         </div>
-
-        <div id="n_sec" style="display:none">
-            <div class="gift-info">🔥 Сделай покупку на 1 200 000 сум и получи подарок NFT!</div>
-            <div class="card" onclick="step2('NFT Gift Pack', 1200000)"><span>🎁 NFT Подарок</span><span class="price">1 200 000</span></div>
-        </div>
         
-        <button class="btn" style="background:#1a1a1a; color:#888; margin-top: 30px;" onclick="window.open('https://t.me/wvvlvl')">👨‍💻 ПОДДЕРЖКА</button>
+        <button class="btn" style="background:#1a1a1a; color:#888; margin-top: 30px;" onclick="window.open('https://t.me/wvwlvl')">👨‍💻 ПОДДЕРЖКА</button>
     </div>
 
     <div id="p2" class="page">
@@ -78,8 +71,7 @@
         function tab(t){
             document.getElementById('s_sec').style.display = t=='s'?'block':'none';
             document.getElementById('p_sec').style.display = t=='p'?'block':'none';
-            document.getElementById('n_sec').style.display = t=='n'?'block':'none';
-            ['t_s','t_p','t_n'].forEach(i=>document.getElementById(i).className='tab');
+            ['t_s','t_p'].forEach(i=>document.getElementById(i).className='tab');
             document.getElementById('t_'+t).className='tab active';
         }
 
@@ -101,7 +93,6 @@
         }
 
         function send(){ 
-            // Передаем данные в бота. Работает ТОЛЬКО если кнопка магазина находится в ReplyKeyboardMarkup (внизу экрана)
             tg.sendData(o.p + '|' + o.n + '|' + o.u); 
             tg.close(); 
         }
