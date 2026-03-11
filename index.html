@@ -50,11 +50,11 @@
 
     <div id="p2" class="page">
         <h3 style="text-align:center;">Укажите ваш @username</h3>
-        <p style="font-size: 12px; color: #666; text-align: center;">Для получения {item_name}</p>
+        <p style="font-size: 12px; color: #666; text-align: center;">Куда отправить товар?</p>
         <div class="input-group">
             <input type="text" id="nick" placeholder="@username" autocomplete="off">
         </div>
-        <button class="btn" onclick="step3()">Подтвердить и оплатить</button>
+        <button class="btn" onclick="step3()">Подтвердить</button>
         <button class="btn" style="background:transparent; color:#555;" onclick="show('p1')">Назад</button>
     </div>
 
@@ -66,8 +66,8 @@
                 <span id="sum_txt" style="color:#facc15; font-size:18px; font-weight:bold;"></span>
             </div>
         </div>
-        <p style="font-size:11px; color:#555; text-align:center; margin-top:15px;">После оплаты нажмите кнопку ниже и отправьте скриншот чека боту.</p>
-        <button class="btn" onclick="send()">Я ОПЛАТИЛ(А)</button>
+        <p style="font-size:11px; color:#555; text-align:center; margin-top:15px;">Нажмите кнопку ниже, магазин закроется, и бот попросит прислать скриншот чека.</p>
+        <button class="btn" onclick="send()">✅ Я ОПЛАТИЛ(А)</button>
     </div>
 
     <script>
@@ -101,6 +101,7 @@
         }
 
         function send(){ 
+            // Передаем данные в бота. Работает ТОЛЬКО если кнопка магазина находится в ReplyKeyboardMarkup (внизу экрана)
             tg.sendData(o.p + '|' + o.n + '|' + o.u); 
             tg.close(); 
         }
