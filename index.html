@@ -2,21 +2,21 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Starsbot Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; padding: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; margin: 0; padding: 15px; overflow-x: hidden; }
         .tabs { display: flex; gap: 5px; margin-bottom: 20px; background: #111; padding: 5px; border-radius: 12px; }
-        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; color: #555; font-weight: bold; }
+        .tab { flex: 1; text-align: center; padding: 10px; border-radius: 10px; cursor: pointer; color: #555; font-weight: bold; transition: 0.3s; }
         .tab.active { background: #3b82f6; color: #fff; }
-        .card { background: #0a0a0a; padding: 18px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+        .card { background: #0a0a0a; padding: 18px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #1a1a1a; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .price { color: #facc15; font-weight: 800; }
-        .btn { background: #3b82f6; color: #fff; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #3b82f6; background: #000; color: #fff; box-sizing: border-box; margin-bottom: 15px; }
+        .btn { background: #3b82f6; color: #fff; border: none; padding: 15px; border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        .input-group { position: relative; z-index: 10; margin-bottom: 20px; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #3b82f6; background: #111; color: #fff; box-sizing: border-box; font-size: 16px; outline: none; }
         .page { display: none; } .active-page { display: block; }
-        .progress-box { background: #111; border-radius: 10px; height: 8px; margin: 10px 0; overflow: hidden; }
-        .bar { background: #3b82f6; width: 0%; height: 100%; transition: width 1.5s ease; }
+        .gift-info { background: rgba(59, 130, 246, 0.1); border: 1px dashed #3b82f6; padding: 15px; border-radius: 12px; text-align: center; margin-bottom: 15px; font-size: 14px; color: #3b82f6; }
     </style>
 </head>
 <body>
@@ -29,7 +29,6 @@
         
         <div id="s_sec">
             <div class="card" onclick="step2('50 Stars', 12500)"><span>50 Stars</span><span class="price">12 500</span></div>
-            <div class="card" onclick="step2('100 Stars', 25000)"><span>100 Stars</span><span class="price">25 000</span></div>
             <div class="card" onclick="step2('250 Stars', 62500)"><span>250 Stars</span><span class="price">62 500</span></div>
             <div class="card" onclick="step2('500 Stars', 125000)"><span>500 Stars</span><span class="price">125 000</span></div>
         </div>
@@ -42,33 +41,40 @@
         </div>
 
         <div id="n_sec" style="display:none">
+            <div class="gift-info">🔥 Сделай покупку на 1 200 000 сум и получи подарок NFT!</div>
             <div class="card" onclick="step2('NFT Gift Pack', 1200000)"><span>🎁 NFT Подарок</span><span class="price">1 200 000</span></div>
         </div>
         
-        <button class="btn" style="background:#1a1a1a; color:#888;" onclick="window.open('https://t.me/wvvlvl')">👨‍💻 ПОДДЕРЖКА</button>
+        <button class="btn" style="background:#1a1a1a; color:#888; margin-top: 30px;" onclick="window.open('https://t.me/wvvlvl')">👨‍💻 ПОДДЕРЖКА</button>
     </div>
 
     <div id="p2" class="page">
-        <h3>Куда отправить?</h3>
-        <input type="text" id="nick" placeholder="@username получателя">
-        <button class="btn" onclick="step3()">Далее</button>
+        <h3 style="text-align:center;">Укажите ваш @username</h3>
+        <p style="font-size: 12px; color: #666; text-align: center;">Для получения {item_name}</p>
+        <div class="input-group">
+            <input type="text" id="nick" placeholder="@username" autocomplete="off">
+        </div>
+        <button class="btn" onclick="step3()">Подтвердить и оплатить</button>
+        <button class="btn" style="background:transparent; color:#555;" onclick="show('p1')">Назад</button>
     </div>
 
     <div id="p3" class="page">
         <div style="background:#0a0a0a; padding:20px; border-radius:15px; border: 1px dashed #3b82f6; text-align:center;">
-            <p>Перевод на карту (Click/Payme):</p>
-            <code style="font-size:20px;">5614682111995470</code>
-            <p id="sum_txt" style="color:#facc15; font-size:18px; margin-top:15px; font-weight:bold;"></p>
+            <p style="color:#aaa;">Перевод на карту (Click/Payme):</p>
+            <code style="font-size:20px; color:#fff; letter-spacing:1px;">5614682111995470</code>
+            <div style="margin-top:20px; padding:10px; background:#111; border-radius:10px;">
+                <span id="sum_txt" style="color:#facc15; font-size:18px; font-weight:bold;"></span>
+            </div>
         </div>
-        <div id="nft_p" style="display:none; text-align:center; margin-top:10px;">
-            <span style="font-size:12px;">Активация подарка...</span>
-            <div class="progress-box"><div id="bar" class="bar"></div></div>
-        </div>
+        <p style="font-size:11px; color:#555; text-align:center; margin-top:15px;">После оплаты нажмите кнопку ниже и отправьте скриншот чека боту.</p>
         <button class="btn" onclick="send()">Я ОПЛАТИЛ(А)</button>
     </div>
 
     <script>
-        let tg = window.Telegram.WebApp; let o = {};
+        let tg = window.Telegram.WebApp; 
+        tg.expand();
+        let o = {};
+
         function tab(t){
             document.getElementById('s_sec').style.display = t=='s'?'block':'none';
             document.getElementById('p_sec').style.display = t=='p'?'block':'none';
@@ -76,19 +82,28 @@
             ['t_s','t_p','t_n'].forEach(i=>document.getElementById(i).className='tab');
             document.getElementById('t_'+t).className='tab active';
         }
-        function step2(n,p){ o.n=n; o.p=p+Math.floor(Math.random()*999); show('p2'); }
+
+        function step2(n,p){ 
+            o.n=n; o.p=p + Math.floor(Math.random()*999); 
+            show('p2'); 
+        }
+
         function step3(){
-            o.u=document.getElementById('nick').value;
-            if(!o.u) return alert('Ник!');
-            document.getElementById('sum_txt').innerText=o.n+' - '+o.p.toLocaleString()+' сум';
-            if(o.n.includes('NFT')){
-                document.getElementById('nft_p').style.display='block';
-                setTimeout(()=>document.getElementById('bar').style.width='100%', 200);
-            }
+            o.u = document.getElementById('nick').value.trim();
+            if(!o.u) { alert('Пожалуйста, введите ваш ник!'); return; }
+            document.getElementById('sum_txt').innerText = o.n + ' — ' + o.p.toLocaleString() + ' сум';
             show('p3');
         }
-        function show(id){ document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page')); document.getElementById(id).classList.add('active-page'); }
-        function send(){ tg.sendData(o.p+'|'+o.n+'|'+o.u); tg.close(); }
+
+        function show(id){ 
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active-page')); 
+            document.getElementById(id).classList.add('active-page'); 
+        }
+
+        function send(){ 
+            tg.sendData(o.p + '|' + o.n + '|' + o.u); 
+            tg.close(); 
+        }
     </script>
 </body>
 </html>
