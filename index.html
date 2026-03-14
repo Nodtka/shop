@@ -25,10 +25,10 @@
     <div id="p1" class="page active-page">
         <div class="section-title">✨ Telegram Stars</div>
         <div class="card" onclick="show('p_custom')"><span>✍️ Своё количество (от 50)</span><span class="price">Указать</span></div>
-        <div class="card" onclick="step2('50 Stars', 12500)"><span>50 Stars</span><span class="price">12 500</span></div>
-        <div class="card" onclick="step2('100 Stars', 25000)"><span>100 Stars</span><span class="price">25 000</span></div>
-        <div class="card" onclick="step2('250 Stars', 62500)"><span>250 Stars</span><span class="price">62 500</span></div>
-        <div class="card" onclick="step2('500 Stars', 125000)"><span>500 Stars</span><span class="price">125 000</span></div>
+        <div class="card" onclick="step2('50 Stars', 12250)"><span>50 Stars</span><span class="price">12 250</span></div>
+        <div class="card" onclick="step2('100 Stars', 24500)"><span>100 Stars</span><span class="price">24 500</span></div>
+        <div class="card" onclick="step2('250 Stars', 61250)"><span>250 Stars</span><span class="price">61 250</span></div>
+        <div class="card" onclick="step2('500 Stars', 122500)"><span>500 Stars</span><span class="price">122 500</span></div>
 
         <div class="section-title">💎 Telegram Premium</div>
         <div class="card" onclick="step2('Premium 1 мес', 50000)"><span>1 месяц</span><span class="price">50 000</span></div>
@@ -75,14 +75,16 @@
 
         function calc() {
             let val = document.getElementById('custom_count').value;
-            if(val >= 50) document.getElementById('custom_res').innerText = (val * 250).toLocaleString() + ' сум';
+            // Умножаем на новый курс: 245 сум за звезду
+            if(val >= 50) document.getElementById('custom_res').innerText = (val * 245).toLocaleString() + ' сум';
             else document.getElementById('custom_res').innerText = '';
         }
 
         function step_custom_done() {
             let val = document.getElementById('custom_count').value;
             if(val < 50) return alert('Минимум 50 звезд!');
-            step2(val + ' Stars', val * 250);
+            // Передаем новый курс в корзину
+            step2(val + ' Stars', val * 245);
         }
 
         function step2(n,p){ 
